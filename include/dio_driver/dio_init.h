@@ -2,7 +2,6 @@
 #define _DIO_INT_H
 
 /* Port Defines */
-#define PORT_A    0
 #define PORT_B    1
 #define PORT_C    2
 #define PORT_D    3

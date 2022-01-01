@@ -16,7 +16,6 @@ void DIO_SetPinValue(u8 port , u8 PinId, u8 PinVal)
 			/* Check on the Required PORT Number */
 			switch (port)
 			{
-				case PORT_A: SET_BIT(PORTA_Register,PinId); break;
 				case PORT_B: SET_BIT(PORTB_Register,PinId); break;
 				case PORT_C: SET_BIT(PORTC_Register,PinId); break;
 				case PORT_D: SET_BIT(PORTD_Register,PinId); break;
@@ -29,7 +28,6 @@ void DIO_SetPinValue(u8 port , u8 PinId, u8 PinVal)
 			/* Check on the Required PORT Number */
 			switch (port)
 			{
-				case PORT_A: CLR_BIT(PORTA_Register,PinId); break;
 				case PORT_B: CLR_BIT(PORTB_Register,PinId); break;
 				case PORT_C: CLR_BIT(PORTC_Register,PinId); break;
 				case PORT_D: CLR_BIT(PORTD_Register,PinId); break;
@@ -58,7 +56,7 @@ u8 DIO_GetPinValue(u8 port, u8 PinId)
 		/* Check on the Required PORT Number */
 		switch (port)
 		{
-			case PORT_A: result= GET_BIT(PINA_Register,PinId); break;
+			
 			case PORT_B: result= GET_BIT(PINB_Register,PinId); break;
 			case PORT_C: result= GET_BIT(PINC_Register,PinId); break;
 			case PORT_D: result= GET_BIT(PIND_Register,PinId); break;
@@ -84,7 +82,7 @@ void DIO_SetPinDirection (u8 port, u8 PinId, u8 PinDir)
 			/* Check on the Required PORT Number */
 			switch (port)
 			{
-				case PORT_A: SET_BIT(DDRA_Register,PinId); break;
+				
 				case PORT_B: SET_BIT(DDRB_Register,PinId); break;
 				case PORT_C: SET_BIT(DDRC_Register,PinId); break;
 				case PORT_D: SET_BIT(DDRD_Register,PinId); break;
@@ -96,7 +94,7 @@ void DIO_SetPinDirection (u8 port, u8 PinId, u8 PinDir)
 			/* Check on the Required PORT Number */
 			switch (port)
 			{
-				case PORT_A: CLR_BIT(DDRA_Register,PinId); break;
+				
 				case PORT_B: CLR_BIT(DDRB_Register,PinId); break;
 				case PORT_C: CLR_BIT(DDRC_Register,PinId); break;
 				case PORT_D: CLR_BIT(DDRD_Register,PinId); break;
@@ -122,7 +120,7 @@ void DIO_SetPortDirection (u8 Port, u8 PortDir)
 	/* Check on the Required PORT Number */
 	switch (Port)
 	{
-		case     PORT_A: DDRA_Register = PortDir; break;
+		
 		case     PORT_B: DDRB_Register = PortDir; break;
 		case     PORT_C: DDRC_Register = PortDir; break;
 		case     PORT_D: DDRD_Register = PortDir; break;
@@ -135,7 +133,7 @@ void DIO_SetPortValue (u8 Port, u8 PortVal)
 	/* Check on the Required PORT Number */
 	switch (Port)
 	{
-		case     PORT_A: PORTA_Register = PortVal; break;
+		
 		case     PORT_B: PORTB_Register = PortVal; break;
 		case     PORT_C: PORTC_Register = PortVal; break;
 		case     PORT_D: PORTD_Register = PortVal; break;
