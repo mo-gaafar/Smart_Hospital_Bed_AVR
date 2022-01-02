@@ -1,0 +1,39 @@
+#include "dio_driver/dio.c"
+#include <avr/io.h>
+
+#define SERVO_PRT PORT_D
+#define SERVO_PIN 3
+#define SERVO_TIMER 
+
+void SERVO_init(void)
+{
+    DIO_SetPinDirection(SERVO_PRT, SERVO_PIN, OUTPUT);
+    // TODO: initialize timer2 in phase correct PWM mode
+    TCCR2B |= 0b01
+}
+
+/*
+0 - STOP
+1 - LEFT
+2 - RIGHT
+*/
+void SERVO_on(unsigned char cmd)
+{
+    switch (cmd)
+    {
+    case 0:
+        /* code */
+        break;
+
+    case 1:
+        /* code */
+        break;
+
+    case 2:
+        /* code */
+        break;
+
+    default:
+        break;
+    }
+}

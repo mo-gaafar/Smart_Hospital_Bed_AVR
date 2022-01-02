@@ -3,14 +3,7 @@
 #include "avr/io.h"
 #include"BIT_MATH.h"
 
-/* 
-MUX4...0        (+ Differential Input)      ( – Differential Input)      Gain
 
-01001                  ADC1                         ADC0                10x
-
-01011                  ADC1                         ADC0                200x
-
-*/
 
 
 void ADC_Init (void)
@@ -32,6 +25,14 @@ void ADC_Init (void)
 	CLR_BIT(ADMUX,5);
 }
 
+/*
+MUX4...0        (+ Differential Input)      ( – Differential Input)      Gain
+
+01001                  ADC1                         ADC0                10x
+
+01011                  ADC1                         ADC0                200x
+
+*/
 u16 ADC_Read (u8 channel)
 {
 	// ADC Channel Selection

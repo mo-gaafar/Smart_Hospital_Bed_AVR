@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.cpp": "cpp",
+        "*.tex": "latex",
+        "delay.h": "c"
+    }
+}
