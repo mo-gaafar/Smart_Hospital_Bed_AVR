@@ -1,3 +1,4 @@
+#include <avr/io.h>
 #include <util/delay.h>
 #include "pushbuttons.h"
 #include "lcd.h"

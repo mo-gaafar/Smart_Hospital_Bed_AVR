@@ -17,7 +17,7 @@
 #define lcd_4bit_init2 0x32
 #define lcd_4bit_init3 0x28
 // defines data pins
-#define LCD_DPRT PORT_B
+#define LCD_DPRT PORT_D
 #define LCD_CPRT PORT_C
 // defines controls pins
 #define LCD_RS 0                   // LCD RS
@@ -67,9 +67,9 @@ void LCD_SendCommand(unsigned char Command)
     // TODO: fix this so that we can put non consecutive combinations of ports
     DIO_SetPinValue(LCD_CPRT, LCD_RS, 0);
     DIO_SetPinValue(LCD_CPRT, LCD_RW, 0);
-    // PORTD = (PORTD & 0x0f) | (Command & 0xf0);
+     PORTD = (PORTD & 0x0f) | (Command & 0xf0);
     LCD_LatchSignal();
-    // PORTD = (PORTD & 0x0f) | (Command << 4);
+     PORTD = (PORTD & 0x0f) | (Command << 4);
     LCD_LatchSignal();
 #else
 #error Please Select The Correct Mode of LCD
@@ -88,11 +88,11 @@ void LCD_SendData(unsigned char Data)
     DIO_SetPinValue(LCD_CPRT, LCD_RS, 1);
     DIO_SetPinValue(LCD_CPRT, LCD_RW, 0);
     // TODO: fix this so that we can put non consecutive combinations of ports
-    // DIO_SetPortValue(LCD_DPRT, (DIO_ReadPort(LCD_DPRT) & 0x0f) | (Data & 0xf0));
-    // PORTD = (PORTD & 0x0f) | (Data & 0xf0);
+     //DIO_SetPortValue(LCD_DPRT, (DIO_ReadPort(LCD_DPRT) & 0x0f) | (Data & 0xf0));
+     PORTD = (PORTD & 0x0f) | (Data & 0xf0);
     LCD_LatchSignal();
-    // DIO_SetPortValue(LCD_DPRT, (DIO_ReadPort(LCD_DPRT) & 0x0f) | (Data << 4));
-    //  PORTD = (PORTD & 0x0f) | (Data << 4);
+     //DIO_SetPortValue(LCD_DPRT, (DIO_ReadPort(LCD_DPRT) & 0x0f) | (Data << 4));
+     PORTD = (PORTD & 0x0f) | (Data << 4);
     LCD_LatchSignal();
 
 #else

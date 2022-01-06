@@ -25,6 +25,7 @@ void PUSHBUTTONS_init(void)
 */
 unsigned char PUSHBUTTONS_read(void)
 {
+    unsigned char pressedkey=KEYPAD_NO_PRESSED_KEY;
     unsigned char i = 0;
 
     unsigned char buttonState = HIGH;
@@ -40,11 +41,12 @@ unsigned char PUSHBUTTONS_read(void)
             buttonState = DIO_GetPinValue(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i]);
             if (buttonState == LOW)
             {
-                return i + 1;
+                pressedkey=(i+1);
+                return pressedkey;
             }
         }
     }
-    return 0; // if reaches here without being returned, no key is pressed
+    return pressedkey; // if reaches here without being returned, no key is pressed
 }
 
 // // enter index as defined in PUSHBUTTON_PINS
