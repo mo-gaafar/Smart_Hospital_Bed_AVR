@@ -1,8 +1,4 @@
-/*
- * Author : Abdullah Drwesh
- * Date   : 20/12/2021
- * Version: 1.0.0
- */
+
 #ifndef LCD_H
 #define LCD_H
 

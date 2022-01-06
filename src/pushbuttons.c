@@ -41,7 +41,7 @@ unsigned char PUSHBUTTONS_read(void)
             buttonState = DIO_ReadPin(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i]);
             if (buttonState == 0)
             {
-                pressedkey=(i+1);
+                pressedkey=(i+1+'0');
                 return pressedkey;
             }
         }
