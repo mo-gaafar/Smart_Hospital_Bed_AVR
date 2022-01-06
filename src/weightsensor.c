@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
-#include "ADC_DRIVER/ADC.c"
-#include "dio_driver/dio.c"
+#include "ADC.h"
+#include "dio_init.h"
 
 #define OCCUPANCY_THRESHOLD_V 0.1
 #define LOADCELL_PRT PORT_C

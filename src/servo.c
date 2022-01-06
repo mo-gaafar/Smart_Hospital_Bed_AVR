@@ -1,15 +1,16 @@
-#include "dio_driver/dio.c"
+#include "dio_init.h"
 #include <avr/io.h>
 
 #define SERVO_PRT PORT_D
 #define SERVO_PIN 3
-#define SERVO_TIMER 
+#define SERVO_TIMER
 
+// Timer 2 Fast PWM
 void SERVO_init(void)
 {
     DIO_SetPinDirection(SERVO_PRT, SERVO_PIN, OUTPUT);
     // TODO: initialize timer2 in phase correct PWM mode
-    TCCR2B |= 0b01
+    // TCCR2B |= 0b01
 }
 
 /*

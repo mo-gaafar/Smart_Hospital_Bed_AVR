@@ -2,6 +2,7 @@
     "files.associations": {
         "*.cpp": "cpp",
         "*.tex": "latex",
-        "delay.h": "c"
+        "delay.h": "c",
+        "pushbuttons.h": "c"
     }
 }

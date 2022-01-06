@@ -1,0 +1,17 @@
+#ifndef _PUSHBUTTONS_H
+#define _PUSHBUTTONS_H
+
+// PIN DEFINITIONS
+#define PUSHBUTTON_PRT PORT_D
+#define PUSHBUTTON_PIN_UP 6
+#define PUSHBUTTON_PIN_DN 5
+#define PUSHBUTTON_PIN_LEFT 4
+#define PUSHBUTTON_PIN_RIGHT 2
+
+#define DEBOUNCE_DELAY_MS 20
+
+void PUSHBUTTONS_init(void);
+
+unsigned char PUSHBUTTONS_read(void);
+
+#endif

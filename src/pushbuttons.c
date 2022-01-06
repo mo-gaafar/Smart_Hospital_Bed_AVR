@@ -1,14 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
-#include "dio_driver/dio.c"
-
-#define PUSHBUTTON_PRT PORT_D
-#define PUSHBUTTON_PIN_UP 6
-#define PUSHBUTTON_PIN_DN 5
-#define PUSHBUTTON_PIN_LEFT 4
-#define PUSHBUTTON_PIN_RIGHT 2
-
-#define DEBOUNCE_DELAY_MS 20
+#include "dio_init.h"
+#include "pushbuttons.h"
 
 unsigned char PUSHBUTTON_PINS[4] = {PUSHBUTTON_PIN_UP, PUSHBUTTON_PIN_DN, PUSHBUTTON_PIN_LEFT, PUSHBUTTON_PIN_RIGHT};
 
@@ -17,9 +10,11 @@ void PUSHBUTTONS_init(void)
 {
     for (unsigned char i = 0; i < 4; i++)
     {
+        // Setting as input
         DIO_SetPinDirection(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i], INPUT);
+        // Setting input pins as pullup
+        DIO_SetPinValue(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i], 1);
     }
-    // TODO:how to set input ports as pullup?
 }
 
 /*0 BUTTONS RELEASED
@@ -28,7 +23,6 @@ void PUSHBUTTONS_init(void)
 3 BUTTON LEFT
 4 BUTTON RIGHT
 */
-
 unsigned char PUSHBUTTONS_read(void)
 {
     unsigned char i = 0;
