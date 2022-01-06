@@ -37,13 +37,18 @@ unsigned char PUSHBUTTONS_read(void)
         // if the button is held in the same state within debounce time, return value
         if (buttonState == 0)
         {
-            _delay_ms(DEBOUNCE_DELAY_MS);
+             pressedkey=(i+1);
+          while(buttonState==0){
+              buttonState=DIO_ReadPin(PUSHBUTTON_PRT,PUSHBUTTON_PINS[i]);
+          }
+          return pressedkey;
+           /* _delay_ms(DEBOUNCE_DELAY_MS);
             buttonState = DIO_ReadPin(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i]);
             if (buttonState == 0)
             {
                 pressedkey=(i+1+'0');
                 return pressedkey;
-            }
+            }*/
         }
     }
     return pressedkey; // if reaches here without being returned, no key is pressed

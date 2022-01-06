@@ -1,12 +1,12 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "ADC.h"
-#include "dio_init.h"
+#include "DIO.h"
 
 #define OCCUPANCY_THRESHOLD_V 0.1
-#define LOADCELL_PRT PORT_C
-#define LOADCELL_ADCp 0
-#define LOADCELL_ADCn 1
+#define LOADCELL_PRT 'C'
+#define LOADCELL_ADCp 6 //0
+#define LOADCELL_ADCn 5//1
 #define LOADCELL_ADMUX 0b01001
 
 // Sets analog port direction, doesnt init adc

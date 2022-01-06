@@ -1,8 +1,8 @@
-#include "dio_init.h"
+#include "DIO.h"
 #include <avr/io.h>
 
-#define SERVO_PRT PORT_D
-#define SERVO_PIN 3
+#define SERVO_PRT 'C'//D
+#define SERVO_PIN 4 //3
 #define SERVO_TIMER
 
 // Timer 2 Fast PWM
