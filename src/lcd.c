@@ -17,8 +17,8 @@
 #define lcd_4bit_init2 0x32
 #define lcd_4bit_init3 0x28
 // defines data pins
-#define lcd_dataprt PORT_B
-#define lcd_controlprt PORT_C
+#define LCD_DPRT PORT_B
+#define LCD_CPRT PORT_C
 // defines controls pins
 #define LCD_RS 0                   // LCD RS
 #define LCD_RW 1                   // LCD RW
@@ -28,22 +28,22 @@ static void LCD_LatchSignal(void); // to make enable 1 and return to 0
 void LCD_Init(void)
 {
 #if LCD_MODE == LCD_8BIT_MODE
-    DIO_SetPortDirection(lcd_dataprt, OUTPUT);
-    DIO_SetPinDirection(lcd_controlprt, LCD_RS, OUTPUT);
-    DIO_SetPinDirection(lcd_controlprt, LCD_RW, OUTPUT);
-    DIO_SetPinDirection(lcd_controlprt, LCD_EN, OUTPUT);
+    DIO_SetPortDirection(LCD_DPRT, OUTPUT);
+    DIO_SetPinDirection(LCD_CPRT, LCD_RS, OUTPUT);
+    DIO_SetPinDirection(LCD_CPRT, LCD_RW, OUTPUT);
+    DIO_SetPinDirection(LCD_CPRT, LCD_EN, OUTPUT);
     LCD_SendCommand(0x38);
     LCD_SendCommand(0x0E);
     LCD_SendCommand(0x01);
     _delay_ms(2);
 #elif LCD_MODE == LCD_4BIT_MODE
-    DIO_SetPinDirection(lcd_dataprt, 4, OUTPUT);
-    DIO_SetPinDirection(lcd_dataprt, 5, OUTPUT);
-    DIO_SetPinDirection(lcd_dataprt, 6, OUTPUT);
-    DIO_SetPinDirection(lcd_dataprt, 7, OUTPUT);
-    DIO_SetPinDirection(lcd_controlprt, LCD_RS, OUTPUT);
-    DIO_SetPinDirection(lcd_dataprt, LCD_RW, OUTPUT);
-    DIO_SetPinDirection(lcd_dataprt, LCD_EN, OUTPUT);
+    DIO_SetPinDirection(LCD_DPRT, 4, OUTPUT);
+    DIO_SetPinDirection(LCD_DPRT, 5, OUTPUT);
+    DIO_SetPinDirection(LCD_DPRT, 6, OUTPUT);
+    DIO_SetPinDirection(LCD_DPRT, 7, OUTPUT);
+    DIO_SetPinDirection(LCD_CPRT, LCD_RS, OUTPUT);
+    DIO_SetPinDirection(LCD_DPRT, LCD_RW, OUTPUT);
+    DIO_SetPinDirection(LCD_DPRT, LCD_EN, OUTPUT);
     LCD_SendCommand(0x33);
     LCD_SendCommand(0x32);
     LCD_SendCommand(0x28);
@@ -57,18 +57,19 @@ void LCD_Init(void)
 void LCD_SendCommand(unsigned char Command)
 {
 #if LCD_MODE == LCD_8BIT_MODE
-    DIO_SetPortValue(lcd_dataprt, Command);
+    DIO_SetPortValue(LCD_DPRT, Command);
 
-    DIO_SetPinValue(lcd_controlprt, LCD_RS, 0);
-    DIO_SetPinValue(lcd_controlprt, LCD_RW, 0);
+    DIO_SetPinValue(LCD_CPRT, LCD_RS, 0);
+    DIO_SetPinValue(LCD_CPRT, LCD_RW, 0);
     LCD_LatchSignal();
+
 #elif LCD_MODE == LCD_4BIT_MODE
     // TODO: fix this so that we can put non consecutive combinations of ports
-    DIO_SetPinValue(lcd_controlprt, LCD_RS, 0);
-    DIO_SetPinValue(lcd_controlprt, LCD_RW, 0);
-    PORTD = (PORTD & 0x0f) | (Command & 0xf0);
+    DIO_SetPinValue(LCD_CPRT, LCD_RS, 0);
+    DIO_SetPinValue(LCD_CPRT, LCD_RW, 0);
+    // PORTD = (PORTD & 0x0f) | (Command & 0xf0);
     LCD_LatchSignal();
-    PORTD = (PORTD & 0x0f) | (Command << 4);
+    // PORTD = (PORTD & 0x0f) | (Command << 4);
     LCD_LatchSignal();
 #else
 #error Please Select The Correct Mode of LCD
@@ -78,20 +79,20 @@ void LCD_SendCommand(unsigned char Command)
 void LCD_SendData(unsigned char Data)
 {
 #if LCD_MODE == LCD_8BIT_MODE
-    DIO_SetPortValue(lcd_dataprt, Data);
+    DIO_SetPortValue(LCD_DPRT, Data);
 
-    DIO_SetPinValue(lcd_controlprt, LCD_RS, 1);
-    DIO_SetPinValue(lcd_controlprt, LCD_RW, 0);
+    DIO_SetPinValue(LCD_CPRT, LCD_RS, 1);
+    DIO_SetPinValue(LCD_CPRT, LCD_RW, 0);
     LCD_LatchSignal();
 #elif LCD_MODE == LCD_4BIT_MODE
-    DIO_SetPinValue(lcd_controlprt, LCD_RS, 1);
-    DIO_SetPinValue(lcd_controlprt, LCD_RW, 0);
+    DIO_SetPinValue(LCD_CPRT, LCD_RS, 1);
+    DIO_SetPinValue(LCD_CPRT, LCD_RW, 0);
     // TODO: fix this so that we can put non consecutive combinations of ports
-    // DIO_SetPortValue(LCD_DPRT,(DIO_ReadPort(LCD_DPRT)&0x0f)|(Data&0xf0));
-    PORTD = (PORTD & 0x0f) | (Data & 0xf0);
+    // DIO_SetPortValue(LCD_DPRT, (DIO_ReadPort(LCD_DPRT) & 0x0f) | (Data & 0xf0));
+    // PORTD = (PORTD & 0x0f) | (Data & 0xf0);
     LCD_LatchSignal();
-    // DIO_SetPortValue(LCD_DPRT,(DIO_ReadPort(LCD_DPRT)&0x0f)|(Data<<4));
-    PORTD = (PORTD & 0x0f) | (Data << 4);
+    // DIO_SetPortValue(LCD_DPRT, (DIO_ReadPort(LCD_DPRT) & 0x0f) | (Data << 4));
+    //  PORTD = (PORTD & 0x0f) | (Data << 4);
     LCD_LatchSignal();
 
 #else
@@ -139,8 +140,8 @@ void lcd_sendSpecialCharachter(unsigned char *arr, unsigned char patternno, unsi
 
 static void LCD_LatchSignal(void)
 {
-    DIO_SetPinValue(lcd_controlprt, LCD_EN, 1);
+    DIO_SetPinValue(LCD_CPRT, LCD_EN, 1);
     _delay_us(1);
-    DIO_SetPinValue(lcd_controlprt, LCD_EN, 0);
+    DIO_SetPinValue(LCD_CPRT, LCD_EN, 0);
     _delay_us(100);
 }
