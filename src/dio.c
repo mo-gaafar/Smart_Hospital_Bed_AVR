@@ -1,182 +1,148 @@
-#include "BIT_MATH.h"
-#include "STD_TYPES.h"
-#include "dio_init.h"
-#include "dio_reg.h"
+/*
+ * Author : Abdullah Drwesh
+ * Date   : 12/12/2021
+ * Version: 1.0.0
+ */
 
-/* IO Pins */
-void DIO_SetPinValue(unsigned char port, unsigned char PinId, unsigned char PinVal)
-{
-	/* Make sure that the Port ID and Pin ID are in the valid range */
-	if ((port <= PORT_D) && (PinId <= PIN_7))
-	{
-		if (PinVal == HIGH)
-		{
-			/* Check on the Required PORT Number */
-			switch (port)
-			{
-			case PORT_B:
-				SET_BIT(PORTB_Register, PinId);
-				break;
-			case PORT_C:
-				SET_BIT(PORTC_Register, PinId);
-				break;
-			case PORT_D:
-				SET_BIT(PORTD_Register, PinId);
-				break;
-			}
-		}
+#include "DIO.h"
 
-		else if (PinVal == LOW)
-		{
-			/* Check on the Required PORT Number */
-			switch (port)
-			{
-			case PORT_B:
-				CLR_BIT(PORTB_Register, PinId);
-				break;
-			case PORT_C:
-				CLR_BIT(PORTC_Register, PinId);
-				break;
-			case PORT_D:
-				CLR_BIT(PORTD_Register, PinId);
-				break;
-			}
-		}
+#include "avr/io.h"
 
-		else
-		{
-			/* Do nothing, Wrong value to set */
-		}
-	}
-
-	else
-	{
-		/* Do nothing, Error in the Pin ID or PORT ID */
-	}
+void DIO_SetPinDirection(char PortName, unsigned char PinNum,
+                      unsigned char Direction) {
+  switch (PortName) {
+    case 'B':
+      if (Direction == INPUT) {
+        DDRB &= ~(1 << PinNum);
+      } else {
+        DDRB |= (1 << PinNum);
+      }
+      break;
+    case 'C':
+      if (Direction == INPUT) {
+        DDRC &= ~(1 << PinNum);
+      } else {
+        DDRC |= (1 << PinNum);
+      }
+      break;
+    case 'D':
+      if (Direction == INPUT) {
+        DDRD &= ~(1 << PinNum);
+      } else {
+        DDRD |= (1 << PinNum);
+      }
+      break;
+    default:
+      break;
+  }
 }
 
-unsigned char DIO_GetPinValue(unsigned char port, unsigned char PinId)
-{
-	/* Define Local Variable to get the BIT Value */
-	unsigned char result;
-	/* Make sure that the Port ID and Pin ID are in the valid range */
-	if ((port <= PORT_D) && (PinId <= PIN_7))
-	{
-		/* Check on the Required PORT Number */
-		switch (port)
-		{
 
-		case PORT_B:
-			result = GET_BIT(PINB_Register, PinId);
-			break;
-		case PORT_C:
-			result = GET_BIT(PINC_Register, PinId);
-			break;
-		case PORT_D:
-			result = GET_BIT(PIND_Register, PinId);
-			break;
-		}
-	}
-
-	else
-	{
-		/* return 0xff in case of error in the Pin ID or PORT ID */
-		result = 0xFF;
-	}
-
-	return result;
+void DIO_SetPortDirection(char PortName, unsigned char Direction){
+  switch (PortName)
+  {
+  case 'B':
+    if(Direction == INPUT){
+      DDRB = 0x00;
+    }else {
+      DDRB = 0xff;
+    }
+    break;
+  case 'C':
+    if(Direction == INPUT){
+      DDRC = 0x00;
+    }else {
+      DDRC = 0xff;
+    }
+    break;
+  case 'D':
+    if(Direction == INPUT){
+      DDRD = 0x00;
+    }else {
+      DDRD = 0xff;
+    }
+    break;
+  default:
+    break;
+  }
 }
 
-void DIO_SetPinDirection(unsigned char port, unsigned char PinId, unsigned char PinDir)
-{
-	/* Make sure that the Port ID and Pin ID are in the valid range */
-	if ((port <= PORT_D) && (PinId <= PIN_7))
-	{
-		if (PinDir == OUTPUT)
-		{
-			/* Check on the Required PORT Number */
-			switch (port)
-			{
-
-			case PORT_B:
-				SET_BIT(DDRB_Register, PinId);
-				break;
-			case PORT_C:
-				SET_BIT(DDRC_Register, PinId);
-				break;
-			case PORT_D:
-				SET_BIT(DDRD_Register, PinId);
-				break;
-			}
-		}
-
-		else if (PinDir == INPUT)
-		{
-			/* Check on the Required PORT Number */
-			switch (port)
-			{
-
-			case PORT_B:
-				CLR_BIT(DDRB_Register, PinId);
-				break;
-			case PORT_C:
-				CLR_BIT(DDRC_Register, PinId);
-				break;
-			case PORT_D:
-				CLR_BIT(DDRD_Register, PinId);
-				break;
-			}
-		}
-
-		else
-		{
-			/* Do nothing, Wrong Direction Required */
-		}
-	}
-
-	else
-	{
-		/* Do nothing, Error in the Pin ID or PORT ID */
-	}
+void DIO_WritePin(char PortName, unsigned char PinNum, unsigned char Data) {
+  switch (PortName) {
+    case 'B':
+      if (Data) {
+        PORTB |= (1 << PinNum);
+      } else {
+        PORTB &= ~(1 << PinNum);
+      }
+      break;
+    case 'C':
+      if (Data) {
+        PORTC |= (1 << PinNum);
+      } else {
+        PORTC &= ~(1 << PinNum);
+      }
+      break;
+    case 'D':
+      if (Data) {
+        PORTD |= (1 << PinNum);
+      } else {
+        PORTD &= ~(1 << PinNum);
+      }
+      break;
+    default:
+      break;
+  }
 }
 
-/* IO Ports */
-void DIO_SetPortDirection(unsigned char Port, unsigned char PortDir)
-{
-	/* Check on the Required PORT Number */
-	switch (Port)
-	{
-
-	case PORT_B:
-		DDRB_Register = PortDir;
-		break;
-	case PORT_C:
-		DDRC_Register = PortDir;
-		break;
-	case PORT_D:
-		DDRD_Register = PortDir;
-		break;
-	default: /* Wrong Port ID */
-		break;
-	}
+void DIO_WritePort(char PortName, unsigned char Data) {
+  switch (PortName) {
+    case 'B':
+      PORTB = Data;
+      break;
+    case 'C':
+      PORTC = Data;
+      break;
+    case 'D':
+      PORTD = Data;
+      break;
+    default:
+      break;
+  }
 }
 
-void DIO_SetPortValue(unsigned char Port, unsigned char PortVal)
-{
-	/* Check on the Required PORT Number */
-	switch (Port)
-	{
+unsigned char DIO_ReadPin(char PortName, unsigned char PinNum) {
+  unsigned char data = 0;
+  switch (PortName) {
+    case 'B':
+      data = (PINB & (1 << PinNum)) >> PinNum;
+      break;
+    case 'C':
+      data = (PINC & (1 << PinNum)) >> PinNum;
+      break;
+    case 'D':
+      data = (PIND & (1 << PinNum)) >> PinNum;
+      break;
+    default:
+      break;
+  }
+  return data;
+}
 
-	case PORT_B:
-		PORTB_Register = PortVal;
-		break;
-	case PORT_C:
-		PORTC_Register = PortVal;
-		break;
-	case PORT_D:
-		PORTD_Register = PortVal;
-		break;
-	default: /* Wrong Port ID */
-		break;
-	}
+unsigned char DIO_ReadPort(char PortName) {
+  unsigned char data = 0;
+  switch (PortName) {
+    case 'B':
+      data = PINB;
+      break;
+    case 'C':
+      data = PINC;
+      break;
+    case 'D':
+      data = PIND;
+      break;
+    default:
+      break;
+  }
+  return data;
 }

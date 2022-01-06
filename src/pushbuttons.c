@@ -1,6 +1,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
-#include "dio_init.h"
+#include "DIO.h"
 #include "pushbuttons.h"
 
 unsigned char PUSHBUTTON_PINS[4] = {PUSHBUTTON_PIN_UP, PUSHBUTTON_PIN_DN, PUSHBUTTON_PIN_LEFT, PUSHBUTTON_PIN_RIGHT};
@@ -13,7 +13,7 @@ void PUSHBUTTONS_init(void)
         // Setting as input
         DIO_SetPinDirection(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i], INPUT);
         // Setting input pins as pullup
-        DIO_SetPinValue(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i], 1);
+        DIO_WritePin(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i], 1);
     }
 }
 
@@ -28,18 +28,18 @@ unsigned char PUSHBUTTONS_read(void)
     unsigned char pressedkey=KEYPAD_NO_PRESSED_KEY;
     unsigned char i = 0;
 
-    unsigned char buttonState = HIGH;
+    unsigned char buttonState = 1;
 
     for (i = 0; i < 4; i++)
     {
         // TODO:if pullup, dont forget to invert inputs
-        buttonState = DIO_GetPinValue(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i]);
+        buttonState = DIO_ReadPin(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i]);
         // if the button is held in the same state within debounce time, return value
-        if (buttonState == LOW)
+        if (buttonState == 0)
         {
             _delay_ms(DEBOUNCE_DELAY_MS);
-            buttonState = DIO_GetPinValue(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i]);
-            if (buttonState == LOW)
+            buttonState = DIO_ReadPin(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i]);
+            if (buttonState == 0)
             {
                 pressedkey=(i+1);
                 return pressedkey;

@@ -1,16 +1,29 @@
-#ifndef _LCD_H
-#define _LCD_H
+/*
+ * Author : Abdullah Drwesh
+ * Date   : 20/12/2021
+ * Version: 1.0.0
+ */
+#ifndef LCD_H
+#define LCD_H
 
-// LCD modes
+/* LCD Modes */
 #define LCD_8BIT_MODE 0
 #define LCD_4BIT_MODE 1
-// INTERFACE
-#define LCD_MODE LCD_4BIT_MODE
-void LCD_Init(void);
-void LCD_SendCommand(unsigned char command);
-void LCD_SendData(unsigned char DATA);
-void lcd_setcursor(unsigned char x, unsigned char y);
-void lcd_sendstring(const char *str);
-void lcd_sendSpecialCharachter(unsigned char *arr, unsigned char patternno, unsigned char x, unsigned char y);
 
-#endif
+/* User Input */
+#define LCD_MODE LCD_4BIT_MODE
+
+void LCD_Init(void);
+
+void LCD_SendCommand(unsigned char Command);
+
+void LCD_SendData(unsigned char Data);
+
+void lcd_setcursor(unsigned char x, unsigned char y);
+//void Seperate_Result (float u32Result,unsigned char * u8array_Result);
+
+void lcd_sendstring(const char * Str);
+void send_specialcharachter(unsigned char *arr,char patternno,char x,char y);
+
+
+#endif /* LCD_H */

@@ -53,7 +53,7 @@ unsigned char choose(void)
 
 int main(void)
 {
-  _delay_ms(200);
+  //_delay_ms(200);
   unsigned char mode = 5;
   LCD_Init();
   PUSHBUTTONS_init();
