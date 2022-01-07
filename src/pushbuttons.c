@@ -17,7 +17,7 @@ void PUSHBUTTONS_init(void)
     }
 }
 
-/*0 BUTTONS RELEASED
+/*FF BUTTONS RELEASED
 1 BUTTON UP
 2 BUTTON DOWN
 3 BUTTON LEFT
@@ -25,7 +25,7 @@ void PUSHBUTTONS_init(void)
 */
 unsigned char PUSHBUTTONS_read(void)
 {
-    unsigned char pressedkey=KEYPAD_NO_PRESSED_KEY;
+    unsigned char pressedkey = KEYPAD_NO_PRESSED_KEY;
     unsigned char i = 0;
 
     unsigned char buttonState = 1;
@@ -37,18 +37,19 @@ unsigned char PUSHBUTTONS_read(void)
         // if the button is held in the same state within debounce time, return value
         if (buttonState == 0)
         {
-             pressedkey=(i+1);
-          while(buttonState==0){
-              buttonState=DIO_ReadPin(PUSHBUTTON_PRT,PUSHBUTTON_PINS[i]);
-          }
-          return pressedkey;
-           /* _delay_ms(DEBOUNCE_DELAY_MS);
-            buttonState = DIO_ReadPin(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i]);
-            if (buttonState == 0)
+            pressedkey = (i + 1);
+            while (buttonState == 0)
             {
-                pressedkey=(i+1+'0');
-                return pressedkey;
-            }*/
+                buttonState = DIO_ReadPin(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i]);
+            }
+            return pressedkey;
+            /* _delay_ms(DEBOUNCE_DELAY_MS);
+             buttonState = DIO_ReadPin(PUSHBUTTON_PRT, PUSHBUTTON_PINS[i]);
+             if (buttonState == 0)
+             {
+                 pressedkey=(i+1+'0');
+                 return pressedkey;
+             }*/
         }
     }
     return pressedkey; // if reaches here without being returned, no key is pressed

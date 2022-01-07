@@ -3,14 +3,29 @@
 #include "pushbuttons.h"
 #include "lcd.h"
 
+#define DEBUGMODE 0
 
+#if DEBUGMODE
 
+void main(void)
+{
+  unsigned char buttonpressed;
+  PUSHBUTTONS_init();
+  LCD_Init();
 
+  while (1)
+  {
+  }
+}
+}
 
-  unsigned char key,c,tt;
+#else
+
+unsigned char key, c, tt;
+
 void sleep1(void)
 {
-   lcd_sendstring("sleeping");
+  lcd_sendstring("sleeping");
   _delay_ms(200);
   LCD_SendCommand(1);
   lcd_sendstring("body temp:37");
@@ -43,55 +58,48 @@ void sleep4(void)
 }
 void sit1(void)
 {
- LCD_SendCommand(1);
- lcd_sendstring("sitting");
- _delay_ms(200);
- LCD_SendCommand(1);
-lcd_sendstring("options");
+  LCD_SendCommand(1);
+  lcd_sendstring("sitting");
+  _delay_ms(200);
+  LCD_SendCommand(1);
+  lcd_sendstring("options");
   lcd_setcursor(1, 0);
   lcd_sendstring("1:next");
   lcd_sendstring("   2:home ");
-
 }
 void sit2(void)
 {
- LCD_SendCommand(1);
-lcd_sendstring("heating");
+  LCD_SendCommand(1);
+  lcd_sendstring("heating");
   lcd_setcursor(1, 0);
   lcd_sendstring("1:on");
   lcd_sendstring("  2:off ");
-
 }
-
-
 void sit3(void)
 {
-  c=0;
- LCD_SendCommand(1);
- lcd_sendstring("heater on");
- _delay_ms(200);
- LCD_SendCommand(1);
- lcd_sendstring("heat temp");
+  c = 0;
+  LCD_SendCommand(1);
+  lcd_sendstring("heater on");
+  _delay_ms(200);
+  LCD_SendCommand(1);
+  lcd_sendstring("heat temp");
   lcd_setcursor(1, 0);
   lcd_sendstring("put temp:");
-  
-
 }
 void sit4()
 {
-   LCD_SendCommand(1);
+  LCD_SendCommand(1);
   lcd_sendstring("lamp enable");
   lcd_setcursor(1, 0);
   lcd_sendstring("1:on");
   lcd_sendstring("  2:off ");
-
 }
 
 unsigned char choose(void)
 {
   do
   {
- 
+
     key = PUSHBUTTONS_read();
 
   } while (key == 0xff);
@@ -99,67 +107,67 @@ unsigned char choose(void)
 }
 int main(void)
 {
-   LCD_Init();
+  LCD_Init();
   PUSHBUTTONS_init();
 
-  unsigned char mode = 5,Pass=0,ff=0;
-  lcd_setcursor(0,4);
-	lcd_sendstring("WELCOME!");
-	_delay_ms(300);
-	LCD_SendCommand(1);
-	lcd_setcursor(0,4);
-	lcd_sendstring("For Login");
-	lcd_setcursor(1,3);
-	lcd_sendstring("Press :  1");
-  key=choose();
-  if(key==1){
+  unsigned char mode = 5, Pass = 0, ff = 0;
+  lcd_setcursor(0, 4);
+  lcd_sendstring("WELCOME!");
+  _delay_ms(300);
+  LCD_SendCommand(1);
+  lcd_setcursor(0, 10);
+  lcd_sendstring("For Login");
+  lcd_setcursor(1, 3);
+  lcd_sendstring("Press :  1");
+  key = choose();
+  if (key == 1)
+  {
     LCD_SendCommand(1);
-    while(Pass!=4)
-		{	ff=0;
-			LCD_SendCommand(1);
-			lcd_sendstring("USER : Hassan");
-			lcd_setcursor(1,0);
-			lcd_sendstring("PASS : ");
-			while(ff!=4)
-			{
-				key=choose();
-				LCD_SendData(key+'0');
-				Pass+=key;
-				ff++;
-				if(ff==4)
-					_delay_ms(200);
-			}
-			ff=0;
-			if(Pass!=4)
-			{
-				Pass=0;
-				LCD_SendCommand(1);
-				lcd_sendstring("wrong pass");
-				lcd_setcursor(1,3);
-				lcd_sendstring("try again");
-				_delay_ms(200);
-
-			}
-		}
+    while (Pass != 4)
+    {
+      ff = 0;
+      LCD_SendCommand(1);
+      lcd_sendstring("USER : Hassan");
+      lcd_setcursor(1, 0);
+      lcd_sendstring("PASS : ");
+      while (ff != 4)
+      {
+        key = choose();
+        LCD_SendData(key + '0');
+        Pass += key;
+        ff++;
+        if (ff == 4)
+          _delay_ms(200);
+      }
+      ff = 0;
+      if (Pass != 4)
+      {
+        Pass = 0;
+        LCD_SendCommand(1);
+        lcd_sendstring("wrong pass");
+        lcd_setcursor(1, 3);
+        lcd_sendstring("try again");
+        _delay_ms(200);
+      }
+    }
     LCD_SendCommand(1);
-  mode=5;
+    mode = 5;
   }
 
-  else {
+  else
+  {
     LCD_SendCommand(1);
-    mode=4;
+    mode = 4;
     lcd_sendstring("good bye");
     _delay_ms(200);
     LCD_SendCommand(1);
-
   }
- // _delay_ms(200);////////////////////////////////////// 
-  
- 
-  //LCD_Print("hello");
+  // _delay_ms(200);//////////////////////////////////////
+
+  // LCD_Print("hello");
   //_delay_ms(200);
-  //LCD_SendCommand(1);
- // _delay_ms(200);
+  // LCD_SendCommand(1);
+  // _delay_ms(200);
 
   while (mode == 5)
   {
@@ -212,64 +220,65 @@ int main(void)
     else if (mode == 2)
     { // last if condition
       sit1();
-      mode=choose();
-      if(mode==1){
-        
-        sit2();
-        mode=choose();
-        if(mode==1)
-        { 
-         LCD_SendCommand(1);
-          lcd_sendstring("heater on");
-         _delay_ms(200);
-         LCD_SendCommand(1);
-         sit3();
-         while(c!=2)
-						{
-							key=choose();
-							LCD_SendData(key+'0');
-							if(c==0)
-							{
-								tt=(key+'0')*10;
-							}
-							if(c==1)
-								{tt+=(key+'0');}
-							c++;
-							if(c==2)
-							{
-									_delay_ms(100);
-							}
-						}
-            sit4();
-            mode=choose();
-            if(mode==1){
-              LCD_SendCommand(1);
-              mode=5;
-              lcd_sendstring("lamp on");
-              _delay_ms(200);
-            }
-            else if(mode==2){
-              LCD_SendCommand(1);
-              mode=5;
-              lcd_sendstring("lamp off");
-              _delay_ms(200);
-            }
-         
-        }
-        else if(mode==2)
-        {
-          mode=5;
-        }
-      }
-      else if (mode==2)
+      mode = choose();
+      if (mode == 1)
       {
-        mode=5;
-      }
-      
 
+        sit2();
+        mode = choose();
+        if (mode == 1)
+        {
+          LCD_SendCommand(1);
+          lcd_sendstring("heater on");
+          _delay_ms(200);
+          LCD_SendCommand(1);
+          sit3();
+          while (c != 2)
+          {
+            key = choose();
+            LCD_SendData(key + '0');
+            if (c == 0)
+            {
+              tt = (key + '0') * 10;
+            }
+            if (c == 1)
+            {
+              tt += (key + '0');
+            }
+            c++;
+            if (c == 2)
+            {
+              _delay_ms(100);
+            }
+          }
+          sit4();
+          mode = choose();
+          if (mode == 1)
+          {
+            LCD_SendCommand(1);
+            mode = 5;
+            lcd_sendstring("lamp on");
+            _delay_ms(200);
+          }
+          else if (mode == 2)
+          {
+            LCD_SendCommand(1);
+            mode = 5;
+            lcd_sendstring("lamp off");
+            _delay_ms(200);
+          }
+        }
+        else if (mode == 2)
+        {
+          mode = 5;
+        }
+      }
+      else if (mode == 2)
+      {
+        mode = 5;
+      }
     }
   }
-  
 }
 
 /*unsigned char key;
@@ -390,3 +399,5 @@ int main(void)
     }
   }
 }*/
+
+#endif
