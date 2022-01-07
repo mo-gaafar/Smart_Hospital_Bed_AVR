@@ -4,8 +4,8 @@
 #define SERVO_PIN 3
 #define SERVO_TIMER
 
-// Timer 2 Fast PWM
-void SERVO_init(void)
+// Timer 2 Phase correct pwm, main frequency 50hz
+void SERVO_Init(void)
 {
 
     DIO_SetPinDirection(SERVO_PRT, SERVO_PIN, OUTPUT);
@@ -24,7 +24,7 @@ void SERVO_init(void)
 1 - LEFT
 2 - RIGHT
 */
-void SERVO_on(unsigned char cmd)
+void SERVO_On(unsigned char cmd)
 {
     TCCR2B |= 0x0F; // set first 3 bits prescaler = 1024 and WGM22 is set
     switch (cmd)
@@ -47,7 +47,7 @@ void SERVO_on(unsigned char cmd)
 }
 
 // cuts off the timer's clock
-void SERVO_off(void)
+void SERVO_Off(void)
 {
     TCCR2B &= ~((1 << 0) | (1 << 1) | (1 << 2)); // clear bits 0:2
 }

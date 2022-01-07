@@ -1,27 +1,61 @@
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
+
 #include "pushbuttons.h"
 #include "lcd.h"
 #include "servo.h"
+#include "timer.h"
+
+// GLOBAL VARIABLE DEFINITIONS
+
+// MENU VARS
+unsigned char key, c, tt;
+
+// WEIGHT
+unsigned short CURRENT_Weight; // Current measured weight
+unsigned char ALARM_Weight;    // This is set if weight exceeds threshold
+unsigned short OCCUPANCY_Time; // Time current weight is above zero
+
+// TEMPERATURE
+unsigned short BODY_Temp;             // Body Temperature (sensor1 at ADC A2)
+unsigned char ALARM_Fever;            // This is set if body temp is above 37
+unsigned short ROOM_Temp;             // Room Temperature (sensor 2 at ADC A3)
+unsigned short HEATER_Threshold = 10; // Temperature to be compared with ROOM_Temp for heater relay control, is set by LCD menu
+unsigned char HEATER_Enable = 0;      // Is heater enabled? (done from lcd menu)
+unsigned char HEATER_State = 0;       // If set, heater relay is turned on
+
+// LIGHT
+unsigned char LIGHT_Enable = 0; // Is light enabled (done from lcd menu)
+unsigned char LIGHT_State = 0;  // If set, light relay is turned on
+
+// TIMER VARS
+unsigned char TIMER0_Counter = 0; // counter to help increase the timer interrupt to 100ms
+#define TIMER0_Counter_Max 6      // 16ms * 6 = 96ms
+
+ISR(TIMER0_OVF_vect)
+{
+  _delay_ms(2000);
+  SERVO_Init();
+  SERVO_On(1);
+  _delay_ms(1000);
+  SERVO_Off();
+  _delay_ms(1000);
+  SERVO_On(2);
+  _delay_ms(1000);
+  SERVO_Off();
+}
 
 #define DEBUGMODE 1
-
 #if DEBUGMODE
 
-void main(void)
+int main(void)
 {
+  TIMER0_Init();
   unsigned char buttonpressed;
-  PUSHBUTTONS_init();
+  PUSHBUTTONS_Init();
   LCD_Init();
-  _delay_ms(2000);
-  SERVO_init();
-  SERVO_on(1);
-  _delay_ms(1000);
-  SERVO_off();
-  _delay_ms(1000);
-  SERVO_on(2);
-  _delay_ms(1000);
-  SERVO_off();
+
   while (1)
   {
 
@@ -34,11 +68,11 @@ void main(void)
 
     _delay_ms(500);
   }
+
+  return 0;
 }
 
 #else
-
-unsigned char key, c, tt;
 
 void sleep1(void)
 {
@@ -117,7 +151,7 @@ unsigned char choose(void)
   do
   {
 
-    key = PUSHBUTTONS_read();
+    key = PUSHBUTTONS_Read();
 
   } while (key == 0xff);
   return key;
@@ -125,7 +159,7 @@ unsigned char choose(void)
 int main(void)
 {
   LCD_Init();
-  PUSHBUTTONS_init();
+  PUSHBUTTONS_Init();
 
   unsigned char mode = 5, Pass = 0, ff = 0;
   lcd_setcursor(0, 4);
@@ -340,7 +374,7 @@ unsigned char choose(void)
 {
   do
   {
-    key = PUSHBUTTONS_read();
+    key = PUSHBUTTONS_Read();
 
   } while (key == 0xff);
   return key;
@@ -351,7 +385,7 @@ int main(void)
   //_delay_ms(200);
   unsigned char mode = 5;
   LCD_Init();
-  PUSHBUTTONS_init();
+  PUSHBUTTONS_Init();
 
   lcd_sendstring("Starting up.");
   _delay_ms(2000);

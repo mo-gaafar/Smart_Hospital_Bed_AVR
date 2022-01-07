@@ -10,8 +10,8 @@
 
 #define DEBOUNCE_DELAY_MS 20
 #define KEYPAD_NO_PRESSED_KEY 0xff
-void PUSHBUTTONS_init(void);
+void PUSHBUTTONS_Init(void);
 
-unsigned char PUSHBUTTONS_read(void);
+unsigned char PUSHBUTTONS_Read(void);
 
 #endif

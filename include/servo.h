@@ -3,10 +3,10 @@
 
 #include "DIO.h"
 #include <avr/io.h>
-#include <avr/delay.h>
+#include <util/delay.h>
 
-void SERVO_init(void);
-void SERVO_on(unsigned char cmd);
-void SERVO_off(void);
+void SERVO_Init(void);
+void SERVO_On(unsigned char cmd);
+void SERVO_Off(void);
 
 #endif

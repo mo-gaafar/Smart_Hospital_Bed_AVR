@@ -6,7 +6,7 @@
 unsigned char PUSHBUTTON_PINS[4] = {PUSHBUTTON_PIN_UP, PUSHBUTTON_PIN_DN, PUSHBUTTON_PIN_LEFT, PUSHBUTTON_PIN_RIGHT};
 
 // Setting pin directions
-void PUSHBUTTONS_init(void)
+void PUSHBUTTONS_Init(void)
 {
     for (unsigned char i = 0; i < 4; i++)
     {
@@ -23,7 +23,7 @@ void PUSHBUTTONS_init(void)
 3 BUTTON LEFT
 4 BUTTON RIGHT
 */
-unsigned char PUSHBUTTONS_read(void)
+unsigned char PUSHBUTTONS_Read(void)
 {
     unsigned char pressedkey = KEYPAD_NO_PRESSED_KEY;
     unsigned char i = 0;
