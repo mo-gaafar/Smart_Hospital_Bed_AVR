@@ -2,8 +2,9 @@
 #include <util/delay.h>
 #include "pushbuttons.h"
 #include "lcd.h"
+#include "servo.h"
 
-#define DEBUGMODE 0
+#define DEBUGMODE 1
 
 #if DEBUGMODE
 
@@ -12,11 +13,27 @@ void main(void)
   unsigned char buttonpressed;
   PUSHBUTTONS_init();
   LCD_Init();
-
+  _delay_ms(2000);
+  SERVO_init();
+  SERVO_on(1);
+  _delay_ms(1000);
+  SERVO_off();
+  _delay_ms(1000);
+  SERVO_on(2);
+  _delay_ms(1000);
+  SERVO_off();
   while (1)
   {
+
+    LCD_SendCommand(1);
+    lcd_setcursor(10, 0);
+    lcd_sendstring("      heating");
+    lcd_setcursor(1, 0);
+    lcd_sendstring("1:on");
+    lcd_sendstring("  2:off ");
+
+    _delay_ms(500);
   }
-}
 }
 
 #else
