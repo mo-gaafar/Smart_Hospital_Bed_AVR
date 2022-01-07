@@ -1,22 +1,109 @@
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
+
+#include "ADC.h"
 #include "pushbuttons.h"
 #include "lcd.h"
+#include "servo.h"
+#include "timer.h"
+#include "loadcell.h"
 
-#define DEBUGMODE 0
+// GLOBAL VARIABLE DEFINITIONS
 
+// MENU VARS
+unsigned char key, c, tt;
+
+// WEIGHT
+unsigned short CURRENT_Weight; // Current measured weight
+unsigned char ALARM_Weight;    // This is set if weight exceeds threshold
+unsigned short OCCUPANCY_Time; // Time current weight is above zero
+#define MAX_Weight 50
+
+// TEMPERATURE
+unsigned short BODY_Temp;             // Body Temperature (sensor1 at ADC A2)
+unsigned char ALARM_Fever;            // This is set if body temp is above 37
+unsigned short ROOM_Temp;             // Room Temperature (sensor 2 at ADC A3)
+unsigned short HEATER_Threshold = 10; // Temperature to be compared with ROOM_Temp for heater relay control, is set by LCD menu
+unsigned char HEATER_Enable = 0;      // Is heater enabled? (done from lcd menu)
+unsigned char HEATER_State = 0;       // If set, heater relay is turned on
+
+// LIGHT
+unsigned char LIGHT_Enable = 0; // Is light enabled (done from lcd menu)
+unsigned char LIGHT_State = 0;  // If set, light relay is turned on
+
+// TODO: Decide on mode change logic
+
+// TIMER VARS
+unsigned char TIMER0_Counter = 0; // counter to help increase the timer interrupt to 100ms
+#define TIMER0_Counter_Max 6      // 16ms * 6 = 96ms
+
+// INTERRUPT FUNCTION EACH 100ms
+ISR(TIMER0_OVF_vect)
+{
+  TIMER0_Counter++;
+  if (TIMER0_Counter == TIMER0_Counter_Max)
+  {
+    // START
+
+    // ------------WEIGHT------------------//
+    // Refresh current weight from adc
+    CURRENT_Weight = LOADCELL_ReadWeight();
+    // Check if max rated weight exceeded
+    if (CURRENT_Weight > MAX_Weight)
+    {
+      // TODO:PRINT ALARM ???
+      ALARM_Weight = 1;
+    }
+    else if (CURRENT_Weight > 0) // if weight within operating range
+    {
+      OCCUPANCY_Time++; // each 100ms
+    }
+    else
+    {
+      OCCUPANCY_Time = 0; // if not used
+    }
+
+    //-------------TEMPERATURE-----------//
+    BODY_Temp = ADC_Read(2); // TODO: review adc read arguments
+    ROOM_Temp = ADC_Read(3); // TODO: missing in hardware
+
+    // END of scope
+    TIMER0_Counter = 0;
+  }
+}
+
+// SLEEP_Activate(){
+
+// }
+
+#define DEBUGMODE 1
 #if DEBUGMODE
 
-void main(void)
+int main(void)
 {
   unsigned char buttonpressed;
-  PUSHBUTTONS_init();
+
+  ADC_Init();
+  TIMER0_Init();
+  LOADCELL_Init();
+  PUSHBUTTONS_Init();
   LCD_Init();
 
   while (1)
   {
+
+    LCD_SendCommand(1);
+    lcd_setcursor(10, 0);
+    lcd_sendstring("      heating");
+    lcd_setcursor(1, 0);
+    lcd_sendstring("1:on");
+    lcd_sendstring("  2:off ");
+
+    _delay_ms(500);
   }
-}
+
+  return 0;
 }
 
 #else
