@@ -33,17 +33,23 @@ unsigned char LIGHT_State = 0;  // If set, light relay is turned on
 unsigned char TIMER0_Counter = 0; // counter to help increase the timer interrupt to 100ms
 #define TIMER0_Counter_Max 6      // 16ms * 6 = 96ms
 
+// INTERRUPT FUNCTION EACH 100ms
 ISR(TIMER0_OVF_vect)
 {
-  _delay_ms(2000);
-  SERVO_Init();
-  SERVO_On(1);
-  _delay_ms(1000);
-  SERVO_Off();
-  _delay_ms(1000);
-  SERVO_On(2);
-  _delay_ms(1000);
-  SERVO_Off();
+  TIMER0_Counter++;
+  if (TIMER0_Counter == TIMER0_Counter_Max)
+  {
+    _delay_ms(2000);
+    SERVO_Init();
+    SERVO_On(1);
+    _delay_ms(1000);
+    SERVO_Off();
+    _delay_ms(1000);
+    SERVO_On(2);
+    _delay_ms(1000);
+    SERVO_Off();
+    TIMER0_Counter = 0;
+  }
 }
 
 #define DEBUGMODE 1
