@@ -2,10 +2,12 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
+#include "ADC.h"
 #include "pushbuttons.h"
 #include "lcd.h"
 #include "servo.h"
 #include "timer.h"
+#include "loadcell.h"
 
 // GLOBAL VARIABLE DEFINITIONS
 
@@ -16,6 +18,7 @@ unsigned char key, c, tt;
 unsigned short CURRENT_Weight; // Current measured weight
 unsigned char ALARM_Weight;    // This is set if weight exceeds threshold
 unsigned short OCCUPANCY_Time; // Time current weight is above zero
+#define MAX_Weight 50
 
 // TEMPERATURE
 unsigned short BODY_Temp;             // Body Temperature (sensor1 at ADC A2)
@@ -29,6 +32,8 @@ unsigned char HEATER_State = 0;       // If set, heater relay is turned on
 unsigned char LIGHT_Enable = 0; // Is light enabled (done from lcd menu)
 unsigned char LIGHT_State = 0;  // If set, light relay is turned on
 
+// TODO: Decide on mode change logic
+
 // TIMER VARS
 unsigned char TIMER0_Counter = 0; // counter to help increase the timer interrupt to 100ms
 #define TIMER0_Counter_Max 6      // 16ms * 6 = 96ms
@@ -39,26 +44,49 @@ ISR(TIMER0_OVF_vect)
   TIMER0_Counter++;
   if (TIMER0_Counter == TIMER0_Counter_Max)
   {
-    _delay_ms(2000);
-    SERVO_Init();
-    SERVO_On(1);
-    _delay_ms(1000);
-    SERVO_Off();
-    _delay_ms(1000);
-    SERVO_On(2);
-    _delay_ms(1000);
-    SERVO_Off();
+    // START
+
+    // ------------WEIGHT------------------//
+    // Refresh current weight from adc
+    CURRENT_Weight = LOADCELL_ReadWeight();
+    // Check if max rated weight exceeded
+    if (CURRENT_Weight > MAX_Weight)
+    {
+      // TODO:PRINT ALARM ???
+      ALARM_Weight = 1;
+    }
+    else if (CURRENT_Weight > 0) // if weight within operating range
+    {
+      OCCUPANCY_Time++; // each 100ms
+    }
+    else
+    {
+      OCCUPANCY_Time = 0; // if not used
+    }
+
+    //-------------TEMPERATURE-----------//
+    BODY_Temp = ADC_Read(2); // TODO: review adc read arguments
+    ROOM_Temp = ADC_Read(3); // TODO: missing in hardware
+
+    // END of scope
     TIMER0_Counter = 0;
   }
 }
+
+// SLEEP_Activate(){
+
+// }
 
 #define DEBUGMODE 1
 #if DEBUGMODE
 
 int main(void)
 {
-  TIMER0_Init();
   unsigned char buttonpressed;
+
+  ADC_Init();
+  TIMER0_Init();
+  LOADCELL_Init();
   PUSHBUTTONS_Init();
   LCD_Init();
 
@@ -164,8 +192,11 @@ unsigned char choose(void)
 }
 int main(void)
 {
-  LCD_Init();
+  ADC_Init();
+  TIMER0_Init();
+  LOADCELL_Init();
   PUSHBUTTONS_Init();
+  LCD_Init();
 
   unsigned char mode = 5, Pass = 0, ff = 0;
   lcd_setcursor(0, 4);
