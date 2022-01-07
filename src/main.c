@@ -327,9 +327,15 @@ int main(void)
   LCD_Init();
   PUSHBUTTONS_init();
 
-  lcd_sendstring("hello");
-  _delay_ms(200);
+  lcd_sendstring("Starting up.");
+  _delay_ms(2000);
   LCD_SendCommand(1);
+  _delay_ms(100);
+
+  lcd_sendstring("Starting up..");
+  _delay_ms(2000);
+  LCD_SendCommand(1);
+
   while (mode == 5)
   {
     LCD_SendCommand(1);
