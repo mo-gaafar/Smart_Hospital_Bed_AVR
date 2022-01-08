@@ -155,15 +155,17 @@ int main(void)
 
   while (1)
   {
-
-    LCD_SendCommand(1);
-    lcd_setcursor(10, 0);
-    lcd_sendstring("      heating");
-    lcd_setcursor(1, 0);
-    lcd_sendstring("1:on");
-    lcd_sendstring("  2:off ");
-
+    lcd_send_number(58);
     _delay_ms(500);
+    LCD_SendCommand(1);
+
+    lcd_send_number(148);
+    _delay_ms(500);
+    LCD_SendCommand(1);
+
+    lcd_send_number(5);
+    _delay_ms(500);
+    LCD_SendCommand(1);
   }
 
   return 0;
