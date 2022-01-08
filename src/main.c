@@ -18,15 +18,15 @@
 unsigned char key, c, tt;
 
 // WEIGHT
-unsigned short CURRENT_Weight; // Current measured weight
-unsigned char ALARM_Weight;    // This is set if weight exceeds threshold
-unsigned short OCCUPANCY_Time; // Time current weight is above zero
-#define MAX_Weight 50
+unsigned short CURRENT_Weight = 60; // Current measured weight
+unsigned char ALARM_Weight;         // This is set if weight exceeds threshold
+unsigned short OCCUPANCY_Time = 0;  // Time current weight is above zero in seconds (for test purposes)
+#define MAX_Weight 150              // if exceeded alarm weight is initiated
 
 // TEMPERATURE
-unsigned short BODY_Temp;             // Body Temperature (sensor1 at ADC A2)
-unsigned char ALARM_Fever;            // This is set if body temp is above 37
-unsigned short ROOM_Temp;             // Room Temperature (sensor 2 at ADC A3)
+unsigned short BODY_Temp = 37;        // Body Temperature (sensor1 at ADC A2)
+unsigned char ALARM_Fever = 0;        // This is set if body temp is above 37
+unsigned short ROOM_Temp = 24;        // Room Temperature (sensor 2 at ADC A3)
 unsigned short HEATER_Threshold = 10; // Temperature to be compared with ROOM_Temp for heater relay control, is set by LCD menu
 unsigned char HEATER_Enable = 1;      // Is heater enabled? (done from lcd menu)
 unsigned char HEATER_State = 0;       // If set, heater relay is turned on
@@ -108,8 +108,8 @@ ISR(TIMER0_OVF_vect)
     }
 
     //-------------TEMPERATURE-----------//
-    BODY_Temp = ADC_Read(2); // TODO: review adc read arguments + maybe add temp sensor driver
-    ROOM_Temp = ADC_Read(3); // TODO: missing in hardware
+    BODY_Temp = (unsigned char)(((ADC_Read(2) * (5.0 / 1024) * 1000)) / 10); // TODO: review adc read arguments + maybe add temp sensor driver
+    ROOM_Temp = (unsigned char)(((ADC_Read(3) * (5.0 / 1024) * 1000)) / 10); // TODO: missing in hardware
 
     if (BODY_Temp > 37)
     {
@@ -145,27 +145,28 @@ ISR(TIMER0_OVF_vect)
       {
         WAKE_Start();
       }
-      // TEMPERATURE AND LIGHTING CONTROL
-      if (HEATER_State == 1)
-      {
-        RELAY_Heater(ON);
-      }
-      else
-      {
-        RELAY_Heater(OFF);
-      }
+    }
+    // TEMPERATURE AND LIGHTING OUTPUTS
+    if (HEATER_State == 1 && HEATER_Enable == 1)
+    {
+      RELAY_Heater(ON);
+    }
+    else
+    {
+      RELAY_Heater(OFF);
+    }
 
-      if (LAMP_State == 1)
-      {
-        RELAY_Lamp(ON);
-      }
-      else
-      {
-        RELAY_Lamp(OFF);
-      }
+    if (LAMP_State == 1 && LAMP_Enable == 1)
+    {
+      RELAY_Lamp(ON);
+    }
+    else
+    {
+      RELAY_Lamp(OFF);
     }
 
     // END OF 1 SEC SCOPE
+    TIMER0_Counter2 = 0;
   }
 }
 
@@ -224,33 +225,36 @@ int main(void)
 unsigned char key, c, tt; // define variables key for pushed button//c for counting
 
 // frame 1 in sleep mode
-void sleep1(void) 
+void sleep1(void)
 {
 
   lcd_sendstring("sleeping");
   _delay_ms(2000);
   LCD_SendCommand(1);
-  lcd_sendstring("body temp:37");
+  lcd_sendstring("body temp:");
+  lcd_send_number(BODY_Temp);
   lcd_setcursor(1, 0);
   lcd_sendstring("1:roomtemp");
   lcd_sendstring("2:home ");
 }
 // frame 2 in sleep mode ROOM TEMPERATURE
-void sleep2(void) 
+void sleep2(void)
 {
   // TODO: keep checking on ROOM_Temp variable
   LCD_SendCommand(1);
-  lcd_sendstring("room temp:27");
+  lcd_sendstring("room temp:");
+  lcd_send_number(ROOM_Temp);
   lcd_setcursor(1, 0);
   lcd_sendstring("1:weight");
   lcd_sendstring(" 2:home ");
 }
 // frame 3 in sleep mode  CURENT WEIGHT
-void sleep3(void) 
+void sleep3(void)
 {
   // TODO: keep checking on CURRENT_Weight variable
   LCD_SendCommand(1);
-  lcd_sendstring("weight:60");
+  lcd_sendstring("weight:");
+  lcd_send_number(CURRENT_Weight);
   lcd_setcursor(1, 0);
   lcd_sendstring("1:sleeptime");
   lcd_sendstring("2:home ");
@@ -259,7 +263,8 @@ void sleep4(void) // frame 4 in sleep mode SLEEP TIME (should be occupancy)
 {
   // TODO: keep checking on OCCUPANCY_Time variable
   LCD_SendCommand(1);
-  lcd_sendstring("sleepingtime:8 sec");
+  lcd_sendstring("sleepingtime:");
+  lcd_send_number(OCCUPANCY_Time);
   lcd_setcursor(1, 0);
   lcd_sendstring("2:home ");
 }
@@ -440,6 +445,7 @@ int main(void)
         mode = choose();
         if (mode == 1) // user want to proceed 2
         {
+          HEATER_Enable = 1;
           LCD_SendCommand(1);
           lcd_sendstring("heater on");
           _delay_ms(200);
@@ -449,12 +455,16 @@ int main(void)
           {
             key = choose();
             LCD_SendData(key + '0');
+            HEATER_Threshold = 0;
             if (c == 0)
             {
+              HEATER_Threshold = key * 10;
               tt = (key + '0') * 10;
             }
+            _delay_ms(200);
             if (c == 1)
             {
+              HEATER_Threshold += key;
               tt += (key + '0');
             }
             c++;
@@ -467,6 +477,8 @@ int main(void)
           mode = choose();
           if (mode == 1)
           {
+            LAMP_Enable = 1;
+            LAMP_State = 1;
             LCD_SendCommand(1);
             mode = 5; // make mode 5 to return home after outing from this function
             lcd_sendstring("lamp on");
@@ -474,14 +486,18 @@ int main(void)
           }
           else if (mode == 2)
           {
+            LAMP_Enable = 0;
+            LAMP_State = 0;
             LCD_SendCommand(1);
             mode = 5; // make mode 5 to return home after outing from this function
             lcd_sendstring("lamp off");
+
             _delay_ms(200);
           }
         }
         else if (mode == 2)
         {
+          HEATER_Enable = 0;
           LCD_SendCommand(1);
           lcd_sendstring("heater off");
           _delay_ms(200);
@@ -490,6 +506,8 @@ int main(void)
           mode = choose();
           if (mode == 1)
           {
+            LAMP_Enable = 1;
+            LAMP_State = 1;
             LCD_SendCommand(1);
             mode = 5; // make mode 5 to return home after outing from this function
             lcd_sendstring("lamp on");
@@ -497,6 +515,8 @@ int main(void)
           }
           else if (mode == 2)
           {
+            LAMP_Enable = 0;
+            LAMP_State = 0;
             LCD_SendCommand(1);
             mode = 5; // make mode 5 to return home after outing from this function
             lcd_sendstring("lamp off");
