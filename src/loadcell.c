@@ -4,7 +4,7 @@
 #define LOADCELL_PRT 'C'
 #define LOADCELL_ADCp 0
 #define LOADCELL_ADCn 1
-#define LOADCELL_ADMUX 0b01001
+#define LOADCELL_ADMUX 0b00001
 
 // Sets analog port direction, doesnt init adc
 void LOADCELL_Init(void)
