@@ -31,6 +31,6 @@ void RELAY_Lamp(unsigned char state);
 // Failure.. dont use with interrupt timer service
 void RELAY_Lamp_Alert(unsigned char timesec);
 
-void buzzer_init(void);
-void Buzzer_on(void);
+void BUZZER_Init(void);
+void BUZZER_Pulse_ms(unsigned short ms);
 #endif
