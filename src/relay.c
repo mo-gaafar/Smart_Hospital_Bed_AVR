@@ -43,3 +43,14 @@ void RELAY_Lamp_Alert(unsigned char timesec)
         state = ~state; // toggle state
     }
 }
+void buzzer_init(void){
+DIO_SetPinDirection(Buzzer_prt,Buzzer_PIN,1);
+    
+}
+void Buzzer_on(void){
+  DIO_WritePin(Buzzer_prt,Buzzer_PIN,1);
+  _delay_ms(500);
+DIO_WritePin(Buzzer_prt,Buzzer_PIN,0);
+  
+
+}
