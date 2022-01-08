@@ -12,6 +12,8 @@
 
 #define ON 1
 #define OFF 0
+#define ALARM_EN 1
+
 // GLOBAL VARIABLE DEFINITIONS
 
 // MENU VARS
@@ -164,12 +166,12 @@ ISR(TIMER0_OVF_vect)
     {
       RELAY_Lamp(OFF);
     }
-    if (ALARM_Fever == 1) // TODO: Add snooze counter
+    if (ALARM_Fever == 1 && ALARM_EN) // TODO: Add snooze counter
     {
       alarm_fever();
       ALARM_Fever = 0; // RESET ALARM FLAG
     }
-    if (ALARM_Weight == 1)
+    if (ALARM_Weight == 1 && ALARM_EN)
     {
       alarm_max_weight();
       ALARM_Weight = 0;
