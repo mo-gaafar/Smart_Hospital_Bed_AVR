@@ -164,6 +164,16 @@ ISR(TIMER0_OVF_vect)
     {
       RELAY_Lamp(OFF);
     }
+    if (ALARM_Fever == 1) // TODO: Add snooze counter
+    {
+      alarm_fever();
+      ALARM_Fever = 0; // RESET ALARM FLAG
+    }
+    if (ALARM_Weight == 1)
+    {
+      alarm_max_weight();
+      ALARM_Weight = 0;
+    }
 
     // END OF 1 SEC SCOPE
     TIMER0_Counter2 = 0;
