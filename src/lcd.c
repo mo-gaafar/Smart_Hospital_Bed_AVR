@@ -92,7 +92,7 @@ void LCD_SendData(unsigned char Data)
 
 void lcd_setcursor(unsigned char x, unsigned char y)
 {
-    /// TODO:
+
     char address = 0;
     if (x == 0)
     {
@@ -130,34 +130,35 @@ void send_specialcharachter(unsigned char *arr, char patternno, char x, char y)
     lcd_setcursor(x, y);
     LCD_SendData(patternno);
 }
-void lcd_send_number(unsigned char numb){
-  if(numb>=100){
-    unsigned char first=numb/100;
-    LCD_SendData(first+'0');
-    unsigned char second=(numb/10)%10;
-    LCD_SendData(second +'0');
-    unsigned char third=numb%10;
-    LCD_SendData(third +'0');
-  
-
-  }
-  else if(numb==0||numb<10){
-      unsigned char first=numb;
-    LCD_SendData(first+'0');
-
-  }
-  else{
-unsigned char first=numb/10;
-LCD_SendData(first+'0');
-unsigned char second=numb%10;
-LCD_SendData(second+'0');}
-
+void lcd_send_number(unsigned char numb)
+{
+    if (numb >= 100)
+    {
+        unsigned char first = numb / 100;
+        LCD_SendData(first + '0');
+        unsigned char second = (numb / 10) % 10;
+        LCD_SendData(second + '0');
+        unsigned char third = numb % 10;
+        LCD_SendData(third + '0');
+    }
+    else if (numb == 0 || numb < 10)
+    {
+        unsigned char first = numb;
+        LCD_SendData(first + '0');
+    }
+    else
+    {
+        unsigned char first = numb / 10;
+        LCD_SendData(first + '0');
+        unsigned char second = numb % 10;
+        LCD_SendData(second + '0');
+    }
 }
 
 static void LCD_LatchSignal(void)
 {
     DIO_WritePin(LCD_CPRT, LCD_EN, 1);
-    _delay_us(1);
+    _delay_us(20);
     DIO_WritePin(LCD_CPRT, LCD_EN, 0);
     _delay_us(100);
 }
