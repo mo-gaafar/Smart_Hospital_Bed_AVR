@@ -123,7 +123,7 @@ ISR(TIMER0_OVF_vect)
 
 // }
 
-#define DEBUGMODE 1
+#define DEBUGMODE 0
 #if DEBUGMODE
 
 int main(void)
@@ -234,7 +234,6 @@ void sit3(void) // frame 3 in sitting mode HEATER ON SELECT TEMP
 {
   c = 0;
   LCD_SendCommand(1);
-  lcd_sendstring("heater on");
   _delay_ms(200);
   LCD_SendCommand(1);
   lcd_sendstring("heat temp");
@@ -429,7 +428,45 @@ int main(void)
         }
         else if (mode == 2)
         {
-          mode = 5;
+         LCD_SendCommand(1);
+          lcd_sendstring("heater of");
+          _delay_ms(200);
+          LCD_SendCommand(1);
+          sit3();
+          while (c != 2) // wait user to set temp then proceed auto to nest step so here user has no option to return home
+          {
+            key = choose();
+            LCD_SendData(key + '0');
+            if (c == 0)
+            {
+              tt = (key + '0') * 10;
+            }
+            if (c == 1)
+            {
+              tt += (key + '0');
+            }
+            c++;
+            if (c == 2)
+            {
+              _delay_ms(100);
+            }
+          }
+          sit4(); // proceed to final frame in sitting mode
+          mode = choose();
+          if (mode == 1)
+          {
+            LCD_SendCommand(1);
+            mode = 5; // make mode 5 to return home after outing from this function
+            lcd_sendstring("lamp on");
+            _delay_ms(200);
+          }
+          else if (mode == 2)
+          {
+            LCD_SendCommand(1);
+            mode = 5; // make mode 5 to return home after outing from this function
+            lcd_sendstring("lamp off");
+            _delay_ms(200);
+          }
         }
       }
       else if (mode == 2)
