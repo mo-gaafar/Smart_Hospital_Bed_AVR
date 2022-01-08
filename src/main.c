@@ -12,7 +12,13 @@
 
 #define ON 1
 #define OFF 0
+void lcd_send_number(unsigned char numb){
+unsigned char first=numb/10;
+LCD_SendData(first);
+unsigned char second=numb%10;
+LCD_SendData(second);
 
+}
 // GLOBAL VARIABLE DEFINITIONS
 
 // MENU VARS
