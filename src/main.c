@@ -28,20 +28,56 @@ unsigned short BODY_Temp;             // Body Temperature (sensor1 at ADC A2)
 unsigned char ALARM_Fever;            // This is set if body temp is above 37
 unsigned short ROOM_Temp;             // Room Temperature (sensor 2 at ADC A3)
 unsigned short HEATER_Threshold = 10; // Temperature to be compared with ROOM_Temp for heater relay control, is set by LCD menu
-unsigned char HEATER_Enable = 0;      // Is heater enabled? (done from lcd menu)
+unsigned char HEATER_Enable = 1;      // Is heater enabled? (done from lcd menu)
 unsigned char HEATER_State = 0;       // If set, heater relay is turned on
 
 // LAMP
-unsigned char LAMP_Enable = 0; // Is lamp enabled (done from lcd menu)
-unsigned char LAMP_State = 0;  // If set, lamp relay is turned on
+unsigned char LAMP_Enable = 1; // Is lamp enabled (done from lcd menu)
+unsigned char LAMP_State = 1;  // If set, lamp relay is turned on
 
 // TODO: Decide on mode change logic
+
+// IF MODE OLD NOT EQUAL NEW THEN MODE CHANGE, BASED ON MODE NEW
+// DEFAULT MODE SITTING
+unsigned char MODE_Old = 0; // 0 FOR SITTING 1 FOR SLEEPING
+// 0 FOR SITTING 1 FOR SLEEPING
+unsigned char MODE_New = 0; // 0 FOR SITTING 1 FOR SLEEPING
 
 // TIMER VARS
 unsigned char TIMER0_Counter = 0;  // counter to help increase the timer interrupt to 100ms
 unsigned char TIMER0_Counter2 = 0; // second counter for 1 sec refresh rate
 #define TIMER0_Counter_100ms 6     // 16ms * 6 = 96ms
 #define TIMER0_Counter_1s 64
+
+// ON MODE CHANGE TO WAKE UP
+void WAKE_Start(void)
+{
+  // SERVO FRONT
+  SERVO_On(2);
+  _delay_ms(500);
+  SERVO_Off();
+
+  // LIGHT ON
+  LAMP_State = 1;
+
+  // EQUATE MODES
+
+  MODE_Old = MODE_New;
+}
+
+void SLEEP_Start(void)
+{
+  // SERVO LAID BACK
+  SERVO_On(2);
+  _delay_ms(500);
+  SERVO_Off();
+  // LIGHT OFF
+  LAMP_State = 0;
+
+  // EQUATE MODES
+  MODE_Old = MODE_New;
+}
+
 // INTERRUPT FUNCTION EACH 100ms
 ISR(TIMER0_OVF_vect)
 {
@@ -97,22 +133,36 @@ ISR(TIMER0_OVF_vect)
 
   if (TIMER0_Counter2 == TIMER0_Counter_1s)
   {
-    if (HEATER_State == 1)
-    {
-      RELAY_Heater(ON);
-    }
-    else
-    {
-      RELAY_Heater(OFF);
-    }
 
-    if (LAMP_State == 1)
+    // If a change in modes occurs the corresponding functions will be called
+    if (MODE_Old != MODE_New)
     {
-      RELAY_Lamp(ON);
-    }
-    else
-    {
-      RELAY_Lamp(OFF);
+      if (MODE_New == 1)
+      {
+        SLEEP_Start();
+      }
+      if (MODE_New == 0)
+      {
+        WAKE_Start();
+      }
+      // TEMPERATURE AND LIGHTING CONTROL
+      if (HEATER_State == 1)
+      {
+        RELAY_Heater(ON);
+      }
+      else
+      {
+        RELAY_Heater(OFF);
+      }
+
+      if (LAMP_State == 1)
+      {
+        RELAY_Lamp(ON);
+      }
+      else
+      {
+        RELAY_Lamp(OFF);
+      }
     }
 
     // END OF 1 SEC SCOPE
@@ -178,7 +228,7 @@ void sleep1(void) // fframe 1 in sleep mode
 {
 
   lcd_sendstring("sleeping");
-  _delay_ms(200);
+  _delay_ms(2000);
   LCD_SendCommand(1);
   lcd_sendstring("body temp:37");
   lcd_setcursor(1, 0);
@@ -215,7 +265,8 @@ void sit1(void) // frame 1 in sitting mode HOME MENU
 {
   LCD_SendCommand(1);
   lcd_sendstring("sitting");
-  _delay_ms(200);
+
+  _delay_ms(2000);
   LCD_SendCommand(1);
   lcd_sendstring("options");
   lcd_setcursor(1, 0);
@@ -265,6 +316,7 @@ int main(void)
   PUSHBUTTONS_Init();
   LCD_Init();
   RELAY_Init();
+  SERVO_Init();
 
   unsigned char mode = 5, Pass = 0, ff = 0;
   lcd_setcursor(0, 4);
@@ -335,6 +387,7 @@ int main(void)
     LCD_SendCommand(1);
     if (mode == 1) // if user choose sleep mode
     {
+      MODE_New = 1;
       sleep1();
       mode = choose();
       if (mode == 1) // user decides to proceed 1
@@ -375,6 +428,7 @@ int main(void)
     }
     else if (mode == 2) // user choose sitting mode
     {                   // last if condition
+      MODE_New = 0;     // enable sitting globally (will be read by interrupt)
       sit1();
       mode = choose();
       if (mode == 1) // user want to proceed 1
@@ -426,7 +480,7 @@ int main(void)
         }
         else if (mode == 2)
         {
-         LCD_SendCommand(1);
+          LCD_SendCommand(1);
           lcd_sendstring("heater of");
           _delay_ms(200);
           LCD_SendCommand(1);
