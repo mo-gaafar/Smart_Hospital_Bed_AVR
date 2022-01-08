@@ -223,8 +223,8 @@ int main(void)
 
 unsigned char key, c, tt; // define variables key for pushed button//c for counting
 
-// TODO: i dont know if the global vairable has to be passed in an argument to the function or not
-void sleep1(void) // fframe 1 in sleep mode
+// frame 1 in sleep mode
+void sleep1(void) 
 {
 
   lcd_sendstring("sleeping");
@@ -235,7 +235,8 @@ void sleep1(void) // fframe 1 in sleep mode
   lcd_sendstring("1:roomtemp");
   lcd_sendstring("2:home ");
 }
-void sleep2(void) // frame 2 in sleep mode ROOM TEMPERATURE
+// frame 2 in sleep mode ROOM TEMPERATURE
+void sleep2(void) 
 {
   // TODO: keep checking on ROOM_Temp variable
   LCD_SendCommand(1);
@@ -244,7 +245,8 @@ void sleep2(void) // frame 2 in sleep mode ROOM TEMPERATURE
   lcd_sendstring("1:weight");
   lcd_sendstring(" 2:home ");
 }
-void sleep3(void) // frame 3 in sleep mode  CURENT WEIGHT
+// frame 3 in sleep mode  CURENT WEIGHT
+void sleep3(void) 
 {
   // TODO: keep checking on CURRENT_Weight variable
   LCD_SendCommand(1);
@@ -481,7 +483,7 @@ int main(void)
         else if (mode == 2)
         {
           LCD_SendCommand(1);
-          lcd_sendstring("heater of");
+          lcd_sendstring("heater off");
           _delay_ms(200);
           LCD_SendCommand(1);
           sit4(); // proceed to final frame in sitting mode
