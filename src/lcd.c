@@ -92,7 +92,7 @@ void LCD_SendData(unsigned char Data)
 
 void lcd_setcursor(unsigned char x, unsigned char y)
 {
-    /// TODO:
+
     char address = 0;
     if (x == 0)
     {
