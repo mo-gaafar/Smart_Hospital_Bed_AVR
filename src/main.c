@@ -8,6 +8,10 @@
 #include "servo.h"
 #include "timer.h"
 #include "loadcell.h"
+#include "relay.h"
+
+#define ON 1
+#define OFF 0
 
 // GLOBAL VARIABLE DEFINITIONS
 
@@ -28,21 +32,25 @@ unsigned short HEATER_Threshold = 10; // Temperature to be compared with ROOM_Te
 unsigned char HEATER_Enable = 0;      // Is heater enabled? (done from lcd menu)
 unsigned char HEATER_State = 0;       // If set, heater relay is turned on
 
-// LIGHT
-unsigned char LIGHT_Enable = 0; // Is light enabled (done from lcd menu)
-unsigned char LIGHT_State = 0;  // If set, light relay is turned on
+// LAMP
+unsigned char LAMP_Enable = 0; // Is lamp enabled (done from lcd menu)
+unsigned char LAMP_State = 0;  // If set, lamp relay is turned on
 
 // TODO: Decide on mode change logic
 
 // TIMER VARS
-unsigned char TIMER0_Counter = 0; // counter to help increase the timer interrupt to 100ms
-#define TIMER0_Counter_Max 6      // 16ms * 6 = 96ms
-
+unsigned char TIMER0_Counter = 0;  // counter to help increase the timer interrupt to 100ms
+unsigned char TIMER0_Counter2 = 0; // second counter for 1 sec refresh rate
+#define TIMER0_Counter_100ms 6     // 16ms * 6 = 96ms
+#define TIMER0_Counter_1s 64
 // INTERRUPT FUNCTION EACH 100ms
 ISR(TIMER0_OVF_vect)
 {
   TIMER0_Counter++;
-  if (TIMER0_Counter == TIMER0_Counter_Max)
+  TIMER0_Counter2++;
+
+  // ENTERS EACH 100ms
+  if (TIMER0_Counter == TIMER0_Counter_100ms)
   {
     // START
 
@@ -65,11 +73,50 @@ ISR(TIMER0_OVF_vect)
     }
 
     //-------------TEMPERATURE-----------//
-    BODY_Temp = ADC_Read(2); // TODO: review adc read arguments
+    BODY_Temp = ADC_Read(2); // TODO: review adc read arguments + maybe add temp sensor driver
     ROOM_Temp = ADC_Read(3); // TODO: missing in hardware
 
-    // END of scope
+    if (BODY_Temp > 37)
+    {
+      ALARM_Fever = 1; // TODO: dont forget to resest this after keypress
+    }
+
+    if ((ROOM_Temp < HEATER_Threshold) && HEATER_Enable)
+    {
+      HEATER_State = 1;
+    }
+    else
+    {
+      HEATER_State = 0;
+    }
+
+    // END of scope (100ms refresh)
     TIMER0_Counter = 0;
+  }
+
+  // START OF 1SEC REFRESH
+
+  if (TIMER0_Counter2 == TIMER0_Counter_1s)
+  {
+    if (HEATER_State == 1)
+    {
+      RELAY_Heater(ON);
+    }
+    else
+    {
+      RELAY_Heater(OFF);
+    }
+
+    if (LAMP_State == 1)
+    {
+      RELAY_Lamp(ON);
+    }
+    else
+    {
+      RELAY_Lamp(OFF);
+    }
+
+    // END OF 1 SEC SCOPE
   }
 }
 
@@ -89,6 +136,14 @@ int main(void)
   LOADCELL_Init();
   PUSHBUTTONS_Init();
   LCD_Init();
+  RELAY_Init();
+
+  // dont forget to enable these when debugging because the ISR wont allow RELAY_Lamp enable without them
+  LAMP_State = 1;
+  LAMP_Enable = 1;
+
+  HEATER_Enable = 1;
+  HEATER_State = 1;
 
   while (1)
   {
@@ -108,10 +163,12 @@ int main(void)
 
 #else
 
-unsigned char key, c, tt; //define variables key for pushed button//c for counting
+unsigned char key, c, tt; // define variables key for pushed button//c for counting
 
+// TODO: i dont know if the global vairable has to be passed in an argument to the function or not
 void sleep1(void) // fframe 1 in sleep mode
 {
+
   lcd_sendstring("sleeping");
   _delay_ms(200);
   LCD_SendCommand(1);
@@ -120,30 +177,33 @@ void sleep1(void) // fframe 1 in sleep mode
   lcd_sendstring("1:roomtemp");
   lcd_sendstring("2:home ");
 }
-void sleep2(void)//frame 2 in sleep mode
+void sleep2(void) // frame 2 in sleep mode ROOM TEMPERATURE
 {
+  // TODO: keep checking on ROOM_Temp variable
   LCD_SendCommand(1);
   lcd_sendstring("room temp:27");
   lcd_setcursor(1, 0);
   lcd_sendstring("1:weight");
   lcd_sendstring(" 2:home ");
 }
-void sleep3(void)//frame 3 in sleep mode
+void sleep3(void) // frame 3 in sleep mode  CURENT WEIGHT
 {
+  // TODO: keep checking on CURRENT_Weight variable
   LCD_SendCommand(1);
   lcd_sendstring("weight:60");
   lcd_setcursor(1, 0);
   lcd_sendstring("1:sleeptime");
   lcd_sendstring("2:home ");
 }
-void sleep4(void)//frame 4 in sleep mode
+void sleep4(void) // frame 4 in sleep mode SLEEP TIME (should be occupancy)
 {
+  // TODO: keep checking on OCCUPANCY_Time variable
   LCD_SendCommand(1);
-  lcd_sendstring("sleepingtime:8hours");
+  lcd_sendstring("sleepingtime:8 sec");
   lcd_setcursor(1, 0);
   lcd_sendstring("2:home ");
 }
-void sit1(void)//frame 1 in sitting mode
+void sit1(void) // frame 1 in sitting mode HOME MENU
 {
   LCD_SendCommand(1);
   lcd_sendstring("sitting");
@@ -154,7 +214,7 @@ void sit1(void)//frame 1 in sitting mode
   lcd_sendstring("1:next");
   lcd_sendstring("   2:home ");
 }
-void sit2(void)//frame 2 in sitting mode
+void sit2(void) // frame 2 in sitting mode HEATER ENABLE/DISABLE
 {
   LCD_SendCommand(1);
   lcd_sendstring("heating");
@@ -162,7 +222,7 @@ void sit2(void)//frame 2 in sitting mode
   lcd_sendstring("1:on");
   lcd_sendstring("  2:off ");
 }
-void sit3(void)//frame 3 in sitting mode
+void sit3(void) // frame 3 in sitting mode HEATER ON SELECT TEMP
 {
   c = 0;
   LCD_SendCommand(1);
@@ -173,7 +233,7 @@ void sit3(void)//frame 3 in sitting mode
   lcd_setcursor(1, 0);
   lcd_sendstring("put temp:");
 }
-void sit4()//frame 4 in sitting mode
+void sit4() // frame 4 in sitting mode LAMP ENABLE
 {
   LCD_SendCommand(1);
   lcd_sendstring("lamp enable");
@@ -182,7 +242,7 @@ void sit4()//frame 4 in sitting mode
   lcd_sendstring("  2:off ");
 }
 
-unsigned char choose(void)//polling function to w8 user to press key
+unsigned char choose(void) // polling function to w8 user to press key
 {
   do
   {
@@ -206,21 +266,21 @@ int main(void)
   lcd_sendstring("For Login");
   lcd_setcursor(1, 3);
   lcd_sendstring("Press :  1");
-  key = choose();//wait to check pressed button from the user
+  key = choose(); // wait to check pressed button from the user
   if (key == 1)
   {
     LCD_SendCommand(1);
-    while (Pass != 4)  //will be in the loop while the password is not correct 
+    while (Pass != 4) // will be in the loop while the password is not correct
     {
       ff = 0;
       LCD_SendCommand(1);
       lcd_sendstring("USER : Hassan");
       lcd_setcursor(1, 0);
       lcd_sendstring("PASS : ");
-      while (ff != 4)//make password from 4 digit
+      while (ff != 4) // make password from 4 digit
       {
         key = choose();
-        LCD_SendData(key + '0');//to recive correct number in ascii code
+        LCD_SendData(key + '0'); // to recive correct number in ascii code
         Pass += key;
         ff++;
         if (ff == 4)
@@ -241,7 +301,7 @@ int main(void)
     mode = 5;
   }
 
-  else  //if user does not want to login so end the program 
+  else // if user does not want to login so end the program
   {
     LCD_SendCommand(1);
     mode = 4;
@@ -256,71 +316,71 @@ int main(void)
   // LCD_SendCommand(1);
   // _delay_ms(200);
 
-  while (mode == 5) //main function we have 
+  while (mode == 5) // main function we have
   {
-    LCD_SendCommand(1);                            // make user choose between 2 modes we have in our program
+    LCD_SendCommand(1); // make user choose between 2 modes we have in our program
     lcd_sendstring("1:for sleep mode");
     lcd_setcursor(1, 0);
     lcd_sendstring("2:for sit mode");
     mode = choose();
     LCD_SendCommand(1);
-    if (mode == 1)  //if user choose sleep mode
+    if (mode == 1) // if user choose sleep mode
     {
-      sleep1(); 
+      sleep1();
       mode = choose();
-      if (mode == 1)//user decides to proceed 1
+      if (mode == 1) // user decides to proceed 1
       {
         sleep2();
         mode = choose();
 
-        if (mode == 1) //user decides to proceed 2
+        if (mode == 1) // user decides to proceed 2
         {
           sleep3();
           mode = choose();
-          if (mode == 1)//user decides to proceed 3
+          if (mode == 1) // user decides to proceed 3
           {
             sleep4();
             mode = choose();
-            if (mode == 2)//user want to return home 3
+            if (mode == 2) // user want to return home 3
             {
               mode = 5;
             }
           }
-          else if (mode == 2)//user want to return home 2
+          else if (mode == 2) // user want to return home 2
           {
             mode = 5;
           }
         }
 
-        else if (mode == 2)//user want to return home 1
+        else if (mode == 2) // user want to return home 1
         {
 
           mode = 5;
         }
       }
 
-      else if (mode == 2)// if user choose home 0
+      else if (mode == 2) // if user choose home 0
       {
         mode = 5;
       }
     }
-    else if (mode == 2)//user choose sitting mode
-    { // last if condition
+    else if (mode == 2) // user choose sitting mode
+    {                   // last if condition
       sit1();
       mode = choose();
-      if (mode == 1)//user want to proceed 1
+      if (mode == 1) // user want to proceed 1
       {
 
         sit2();
         mode = choose();
-        if (mode == 1)//user want to proceed 2
+        if (mode == 1) // user want to proceed 2
         {
           LCD_SendCommand(1);
           lcd_sendstring("heater on");
           _delay_ms(200);
           LCD_SendCommand(1);
           sit3();
-          while (c != 2)//wait user to set temp then proceed auto to nest step so here user has no option to return home
+          while (c != 2) // wait user to set temp then proceed auto to nest step so here user has no option to return home
           {
             key = choose();
             LCD_SendData(key + '0');
@@ -338,19 +398,19 @@ int main(void)
               _delay_ms(100);
             }
           }
-          sit4();//proceed to final frame in sitting mode
+          sit4(); // proceed to final frame in sitting mode
           mode = choose();
           if (mode == 1)
           {
             LCD_SendCommand(1);
-            mode = 5;                 //make mode 5 to return home after outing from this function
+            mode = 5; // make mode 5 to return home after outing from this function
             lcd_sendstring("lamp on");
             _delay_ms(200);
           }
           else if (mode == 2)
           {
             LCD_SendCommand(1);
-            mode = 5;//make mode 5 to return home after outing from this function
+            mode = 5; // make mode 5 to return home after outing from this function
             lcd_sendstring("lamp off");
             _delay_ms(200);
           }
@@ -426,7 +486,7 @@ int main(void)
   lcd_sendstring("Starting up.");
   _delay_ms(2000);
   LCD_SendCommand(1);
-  _delay_ms(100); 
+  _delay_ms(100);
 
   lcd_sendstring("Starting up..");
   _delay_ms(2000);
