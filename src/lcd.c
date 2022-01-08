@@ -130,6 +130,24 @@ void send_specialcharachter(unsigned char *arr, char patternno, char x, char y)
     lcd_setcursor(x, y);
     LCD_SendData(patternno);
 }
+void lcd_send_number(unsigned char numb){
+  if(numb>=100){
+    unsigned char first=numb/100;
+    LCD_SendData(first);
+    unsigned char second=numb/10;
+    LCD_SendData(second);
+    unsigned char third=numb%10;
+    LCD_SendData(third);
+  
+
+  }
+  else{
+unsigned char first=numb/10;
+LCD_SendData(first);
+unsigned char second=numb%10;
+LCD_SendData(second);}
+
+}
 
 static void LCD_LatchSignal(void)
 {

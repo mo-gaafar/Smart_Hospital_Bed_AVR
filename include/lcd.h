@@ -17,6 +17,7 @@ void LCD_SendData(unsigned char Data);
 
 void lcd_setcursor(unsigned char x, unsigned char y);
 // void Seperate_Result (float u32Result,unsigned char * u8array_Result);
+void lcd_send_number(unsigned char numb);
 
 void lcd_sendstring(const char *Str);
 void send_specialcharachter(unsigned char *arr, char patternno, char x, char y);
