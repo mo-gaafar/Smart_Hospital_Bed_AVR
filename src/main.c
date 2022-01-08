@@ -123,7 +123,7 @@ ISR(TIMER0_OVF_vect)
 
 // }
 
-#define DEBUGMODE 0
+#define DEBUGMODE 1
 #if DEBUGMODE
 
 int main(void)
@@ -143,6 +143,15 @@ int main(void)
 
   HEATER_Enable = 1;
   // HEATER_State = 1;
+  lcd_send_number(58);
+  _delay_ms(200);
+  LCD_SendCommand(1);
+  lcd_send_number(148);
+  _delay_ms(200);
+  LCD_SendCommand(1);
+  lcd_send_number(5);
+  _delay_ms(200);
+  LCD_SendCommand(1);
 
   while (1)
   {

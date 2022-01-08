@@ -133,19 +133,24 @@ void send_specialcharachter(unsigned char *arr, char patternno, char x, char y)
 void lcd_send_number(unsigned char numb){
   if(numb>=100){
     unsigned char first=numb/100;
-    LCD_SendData(first);
-    unsigned char second=numb/10;
-    LCD_SendData(second);
+    LCD_SendData(first+'0');
+    unsigned char second=(numb/10)%10;
+    LCD_SendData(second +'0');
     unsigned char third=numb%10;
-    LCD_SendData(third);
+    LCD_SendData(third +'0');
   
+
+  }
+  else if(numb==0||numb<10){
+      unsigned char first=numb;
+    LCD_SendData(first+'0');
 
   }
   else{
 unsigned char first=numb/10;
-LCD_SendData(first);
+LCD_SendData(first+'0');
 unsigned char second=numb%10;
-LCD_SendData(second);}
+LCD_SendData(second+'0');}
 
 }
 
