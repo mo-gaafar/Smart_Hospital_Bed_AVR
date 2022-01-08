@@ -170,9 +170,7 @@ ISR(TIMER0_OVF_vect)
   }
 }
 
-// SLEEP_Activate(){
 
-// }
 
 #define DEBUGMODE 0
 #if DEBUGMODE
