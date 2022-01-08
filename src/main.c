@@ -170,8 +170,6 @@ ISR(TIMER0_OVF_vect)
   }
 }
 
-
-
 #define DEBUGMODE 0
 #if DEBUGMODE
 
@@ -221,29 +219,34 @@ int main(void)
 #else
 
 unsigned char key, c, tt; // define variables key for pushed button//c for counting
-  
 
-  void alarm_fever(void)
+void alarm_fever(void)
+{
+  LCD_SendCommand(1);
+  lcd_sendstring("warning high tempreature");
+  _delay_ms(200);
+  for (unsigned char i = 0; i < 5; i++)
   {
-    LCD_SendCommand(1);
-    lcd_sendstring("warning high tempreature");
+
+    BUZZER_Pulse_ms(1000);
     _delay_ms(200);
-    Buzzer_on();
-    LCD_SendCommand(1);
-
-
   }
-  void alarm_max_weight(void){
-    
-    LCD_SendCommand(1);
-    lcd_sendstring("warning high weight");
+  LCD_SendCommand(1);
+}
+void alarm_max_weight(void)
+{
+
+  LCD_SendCommand(1);
+  lcd_sendstring("warning high weight");
+  for (unsigned char i = 0; i < 5; i++)
+  {
+
+    BUZZER_Pulse_ms(1000);
     _delay_ms(200);
-    Buzzer_on();
-    LCD_SendCommand(1);
-
-
-
   }
+
+  LCD_SendCommand(1);
+}
 // frame 1 in sleep mode
 void sleep1(void)
 {
@@ -344,6 +347,7 @@ int main(void)
   LCD_Init();
   RELAY_Init();
   SERVO_Init();
+  BUZZER_Init();
 
   unsigned char mode = 5, Pass = 0, ff = 0;
   lcd_setcursor(0, 4);

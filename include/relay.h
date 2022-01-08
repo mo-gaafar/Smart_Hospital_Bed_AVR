@@ -10,8 +10,8 @@
 #define LAMP_PRT 'B'
 #define LAMP_PIN 4
 
-#define Buzzer_prt 'C'
-#define Buzzer_PIN 5
+#define BUZZER_PRT 'C'
+#define BUZZER_PIN 5
 
 // SET PIN DIRECTIONS
 void RELAY_Init(void);
@@ -30,7 +30,8 @@ void RELAY_Lamp(unsigned char state);
 
 // Failure.. dont use with interrupt timer service
 void RELAY_Lamp_Alert(unsigned char timesec);
-
+// Initializes buzzer pin
 void BUZZER_Init(void);
+// Variable ON pulse argument
 void BUZZER_Pulse_ms(unsigned short ms);
 #endif
