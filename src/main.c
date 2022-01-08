@@ -124,7 +124,7 @@ ISR(TIMER0_OVF_vect)
 
 // }
 
-#define DEBUGMODE 1
+#define DEBUGMODE 0
 #if DEBUGMODE
 
 int main(void)
@@ -139,11 +139,11 @@ int main(void)
   RELAY_Init();
 
   // dont forget to enable these when debugging because the ISR wont allow RELAY_Lamp enable without them
-  LAMP_State = 1;
+  // LAMP_State = 1;
   LAMP_Enable = 1;
 
   HEATER_Enable = 1;
-  HEATER_State = 1;
+  // HEATER_State = 1;
 
   while (1)
   {
@@ -247,15 +247,19 @@ unsigned char choose(void) // polling function to w8 user to press key
   do
   {
 
-    key = PUSHBUTTONS_read();
+    key = PUSHBUTTONS_Read();
 
   } while (key == 0xff);
   return key;
 }
 int main(void)
 {
+  ADC_Init();
+  TIMER0_Init();
+  LOADCELL_Init();
+  PUSHBUTTONS_Init();
   LCD_Init();
-  PUSHBUTTONS_init();
+  RELAY_Init();
 
   unsigned char mode = 5, Pass = 0, ff = 0;
   lcd_setcursor(0, 4);

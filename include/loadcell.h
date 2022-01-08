@@ -7,6 +7,6 @@
 #include "DIO.h"
 
 void LOADCELL_Init(void);
-float LOACELL_ReadWeight(void);
+float LOADCELL_ReadWeight(void);
 
 #endif
