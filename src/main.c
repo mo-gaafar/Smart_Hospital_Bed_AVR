@@ -234,8 +234,6 @@ void sit3(void) // frame 3 in sitting mode HEATER ON SELECT TEMP
 {
   c = 0;
   LCD_SendCommand(1);
-  _delay_ms(200);
-  LCD_SendCommand(1);
   lcd_sendstring("heat temp");
   lcd_setcursor(1, 0);
   lcd_sendstring("put temp:");
