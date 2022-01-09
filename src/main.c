@@ -81,7 +81,7 @@ void SLEEP_Start(void)
   MODE_Old = MODE_New;
 }
 
-// INTERRUPT FUNCTION EACH 100ms
+// INTERRUPT FUNCTION EACH 16ms
 ISR(TIMER0_OVF_vect)
 {
   TIMER0_Counter++;
@@ -98,7 +98,6 @@ ISR(TIMER0_OVF_vect)
     // Check if max rated weight exceeded
     if (CURRENT_Weight > MAX_Weight)
     {
-      // TODO:PRINT ALARM ???
       ALARM_Weight = 1;
     }
     else if (CURRENT_Weight > 10) // if weight within operating range
@@ -113,12 +112,12 @@ ISR(TIMER0_OVF_vect)
     }
 
     //-------------TEMPERATURE-----------//
-    BODY_Temp = (unsigned char)(((ADC_Read(2) * (5.0f / 1024) * 1000)) / 10); // TODO: review adc read arguments + maybe add temp sensor driver
-    ROOM_Temp = (unsigned char)(((ADC_Read(3) * (5.0f / 1024) * 1000)) / 10); // TODO: missing in hardware
+    BODY_Temp = (unsigned char)(((ADC_Read(2) * (5.0f / 1024) * 1000)) / 10); // 
+    ROOM_Temp = (unsigned char)(((ADC_Read(3) * (5.0f / 1024) * 1000)) / 10); // 
 
     if (BODY_Temp > 37)
     {
-      ALARM_Fever = 1; // TODO: dont forget to resest this after keypress
+      ALARM_Fever = 1;
     }
     else
     {
@@ -265,7 +264,7 @@ void alarm_max_weight(void)
   BUZZER_Pulse_ms(500);
   LCD_SendCommand(1);
 }
-// frame 1 in sleep mode
+// frame 1 in sleep mode LOADING 
 void sleep1(void)
 {
 
@@ -426,7 +425,7 @@ int main(void)
   // LCD_SendCommand(1);
   // _delay_ms(200);
 
-  while (mode == 5) // main function we have
+  while (mode == 5) // main function after user is allowed in
   {
     LCD_SendCommand(1); // make user choose between 2 modes we have in our program
     lcd_sendstring("      1:for sleep mode");
@@ -493,7 +492,7 @@ int main(void)
           _delay_ms(200);
           LCD_SendCommand(1);
           sit3();
-          while (c != 2) // wait user to set temp then proceed auto to nest step so here user has no option to return home
+          while (c != 2) // wait user to set temp then proceed auto to next step so here user has no option to return home
           {
             key = choose();
             LCD_SendData(key + '0');
