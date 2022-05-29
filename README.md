@@ -1,4 +1,4 @@
-# Smart_Hospital_Bed_AVR
+# Smart Hospital Bed AVR
 
 An automatic temperature &amp; posture control hospital bed prototype for SBEN330
 
@@ -17,7 +17,7 @@ An automatic temperature &amp; posture control hospital bed prototype for SBEN33
 
 ## Simulation Preview
 
-![](.\documentation\Animation.gif)
+![animation](.\documentation\Animation.gif)
 
 ## Modes
 
@@ -31,3 +31,15 @@ An automatic temperature &amp; posture control hospital bed prototype for SBEN33
 
 - High Fever
 - Max Weight Exceeded
+
+## Team Members
+
+| Name | Role |
+|------|------|
+| Mohamed Nasser | ISR + Timer, SERVO, PB, RELAY  |
+| Hassan Samy | Main Menu, LCD, DIO|
+
+## Platform
+
+Designed for the Atmel Atmega328p microcontroller
+Built using platform IO in vscode, Compiled using avrgcc
