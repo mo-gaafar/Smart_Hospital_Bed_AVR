@@ -17,7 +17,7 @@ An automatic temperature &amp; posture control hospital bed prototype for SBEN33
 
 ## Simulation Preview
 
-![animation](.\documentation\Animation.gif)
+![animation](./documentation/Animation.gif)
 
 ## Modes
 
