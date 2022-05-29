@@ -112,8 +112,8 @@ ISR(TIMER0_OVF_vect)
     }
 
     //-------------TEMPERATURE-----------//
-    BODY_Temp = (unsigned char)(((ADC_Read(2) * (5.0f / 1024) * 1000)) / 10); // 
-    ROOM_Temp = (unsigned char)(((ADC_Read(3) * (5.0f / 1024) * 1000)) / 10); // 
+    BODY_Temp = (unsigned char)(((ADC_Read(2) * (5.0f / 1024) * 1000)) / 10); //
+    ROOM_Temp = (unsigned char)(((ADC_Read(3) * (5.0f / 1024) * 1000)) / 10); //
 
     if (BODY_Temp > 37)
     {
@@ -250,7 +250,7 @@ unsigned char key, c, tt; // define variables key for pushed button//c for count
 void alarm_fever(void)
 {
   LCD_SendCommand(1);
-  lcd_sendstring("      HIGH FEVER!");
+  lcd_sendstring("HIGH FEVER!");
   _delay_ms(200);
   BUZZER_Pulse_ms(500);
   LCD_SendCommand(1);
@@ -259,19 +259,19 @@ void alarm_max_weight(void)
 {
 
   LCD_SendCommand(1);
-  lcd_sendstring("      MAX WEIGHT");
+  lcd_sendstring("MAX WEIGHT");
   _delay_ms(200);
   BUZZER_Pulse_ms(500);
   LCD_SendCommand(1);
 }
-// frame 1 in sleep mode LOADING 
+// frame 1 in sleep mode LOADING
 void sleep1(void)
 {
 
-  lcd_sendstring("      sleeping..");
+  lcd_sendstring(" sleeping..");
   _delay_ms(2000);
   LCD_SendCommand(1);
-  lcd_sendstring("      body temp:");
+  lcd_sendstring(" body temp:");
   lcd_send_number(BODY_Temp);
   lcd_setcursor(1, 0);
   lcd_sendstring("1:roomtmp ");
@@ -282,10 +282,10 @@ void sleep2(void)
 {
   // TODO: keep checking on ROOM_Temp variable
   LCD_SendCommand(1);
-  lcd_sendstring("      room temp:");
+  lcd_sendstring(" room temp:");
   lcd_send_number(ROOM_Temp);
   lcd_setcursor(1, 0);
-  lcd_sendstring("1:weight");
+  lcd_sendstring(" 1:weight");
   lcd_sendstring(" 2:home ");
 }
 // frame 3 in sleep mode  CURENT WEIGHT
@@ -293,7 +293,7 @@ void sleep3(void)
 {
   // TODO: keep checking on CURRENT_Weight variable
   LCD_SendCommand(1);
-  lcd_sendstring("      weight:");
+  lcd_sendstring(" weight:");
   lcd_send_number(CURRENT_Weight);
   lcd_setcursor(1, 0);
   lcd_sendstring("1:occ time");
@@ -303,45 +303,45 @@ void sleep4(void) // frame 4 in sleep mode SLEEP TIME (should be occupancy)
 {
   // TODO: keep checking on OCCUPANCY_Time variable
   LCD_SendCommand(1);
-  lcd_sendstring("      occupy time:");
+  lcd_sendstring(" occupy time:");
   lcd_send_number(OCCUPANCY_Time);
   lcd_setcursor(1, 0);
-  lcd_sendstring("2:home ");
+  lcd_sendstring(" 2:home ");
 }
 void sit1(void) // frame 1 in sitting mode HOME MENU
 {
   LCD_SendCommand(1);
-  lcd_sendstring("      sitting..");
+  lcd_sendstring(" sitting..");
 
   _delay_ms(2000);
   LCD_SendCommand(1);
-  lcd_sendstring("      options");
+  lcd_sendstring(" options");
   lcd_setcursor(1, 0);
-  lcd_sendstring("1:next");
-  lcd_sendstring("   2:home ");
+  lcd_sendstring(" 1:next");
+  lcd_sendstring(" 2:home ");
 }
 void sit2(void) // frame 2 in sitting mode HEATER ENABLE/DISABLE
 {
   LCD_SendCommand(1);
-  lcd_sendstring("      heating");
+  lcd_sendstring(" heating");
   lcd_setcursor(1, 0);
-  lcd_sendstring("1:on");
-  lcd_sendstring("  2:off ");
+  lcd_sendstring(" 1:on");
+  lcd_sendstring(" 2:off ");
 }
 void sit3(void) // frame 3 in sitting mode HEATER ON SELECT TEMP
 {
   c = 0;
   LCD_SendCommand(1);
-  lcd_sendstring("      heat temp");
+  lcd_sendstring(" heat temp");
   lcd_setcursor(1, 0);
-  lcd_sendstring("put temp:");
+  lcd_sendstring(" put temp:");
 }
 void sit4() // frame 4 in sitting mode LAMP ENABLE
 {
   LCD_SendCommand(1);
-  lcd_sendstring("      lamp enable");
+  lcd_sendstring(" lamp enable");
   lcd_setcursor(1, 0);
-  lcd_sendstring("1:on");
+  lcd_sendstring(" 1:on");
   lcd_sendstring("  2:off ");
 }
 
@@ -372,7 +372,7 @@ int main(void)
   _delay_ms(300);
   LCD_SendCommand(1);
   lcd_setcursor(0, 10);
-  lcd_sendstring("      For Login");
+  lcd_sendstring(" For Login");
   lcd_setcursor(1, 2);
   lcd_sendstring("Press :  1");
   key = choose(); // wait to check pressed button from the user
@@ -383,7 +383,7 @@ int main(void)
     {
       ff = 0;
       LCD_SendCommand(1);
-      lcd_sendstring("      USER : Hassan");
+      lcd_sendstring(" USER : Hassan");
       lcd_setcursor(1, 0);
       lcd_sendstring("PASS : ");
       while (ff != 4) // make password from 4 digit
@@ -400,9 +400,9 @@ int main(void)
       {
         Pass = 0;
         LCD_SendCommand(1);
-        lcd_sendstring("wrong pass");
+        lcd_sendstring(" wrong pass");
         lcd_setcursor(1, 3);
-        lcd_sendstring("try again");
+        lcd_sendstring(" try again");
         _delay_ms(200);
       }
     }
@@ -414,7 +414,7 @@ int main(void)
   {
     LCD_SendCommand(1);
     mode = 4;
-    lcd_sendstring("good bye");
+    lcd_sendstring(" good bye");
     _delay_ms(200);
     LCD_SendCommand(1);
   }
@@ -428,9 +428,9 @@ int main(void)
   while (mode == 5) // main function after user is allowed in
   {
     LCD_SendCommand(1); // make user choose between 2 modes we have in our program
-    lcd_sendstring("      1:for sleep mode");
+    lcd_sendstring(" 1:for sleep mode");
     lcd_setcursor(1, 0);
-    lcd_sendstring("2:for sit mode");
+    lcd_sendstring(" 2:for sit mode");
     mode = choose();
     LCD_SendCommand(1);
     if (mode == 1) // if user choose sleep mode
